@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Limitless TrueVibe — A free community for electronic music producers. Join monthly beat challenges, get on community playlists, and find your people.">
+  <meta name="theme-color" content="#161b31">
+  <meta property="og:title" content="Limitless TrueVibe">
+  <meta property="og:description" content="A free community for electronic music producers. Beat challenges, playlists, and good vibes.">
+  <meta property="og:image" content="assets/images/logo-hero.jpg">
+  <meta property="og:type" content="website">
+  <title>Limitless TrueVibe — A Home for Electronic Music Producers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="assets/images/logo-hero.jpg">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo-link">
+      <img class="nav-logo" src="assets/images/logo-no-bg.png" alt="Limitless TrueVibe">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#challenges">Challenges</a></li>
+      <li><a href="#playlists">Playlists</a></li>
+      <li><a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="nav-discord"><span>⊹</span> Discord</a></li>
+    </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#about" class="mobile-link">About</a></li>
+      <li><a href="#challenges" class="mobile-link">Challenges</a></li>
+      <li><a href="#playlists" class="mobile-link">Playlists</a></li>
+      <li><a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="mobile-link mobile-discord">Join the Discord</a></li>
+    </ul>
+  </div>
+
+  <!-- HERO
+       The canvas waveform spans the full width behind the logo.
+       drawHeroWave() in script.js handles rendering + animation. -->
+  <section id="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="particles" id="particles" aria-hidden="true"></div>
+    <canvas class="hero-wave-canvas" id="heroWaveCanvas" aria-hidden="true"></canvas>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="live-dot" aria-hidden="true"></span>
+        Electronic Music Community &middot; Open to All Producers
+      </div>
+      <img class="hero-logo" src="assets/images/logo-hero.jpg" alt="Limitless TrueVibe">
+      <h1 class="hero-headline">A home for producers<br>who <em>make things</em></h1>
+      <p class="hero-sub">We're a community of electronic music producers who share, support, and grow together. Join monthly beat challenges, get on community playlists, and find your people.</p>
+      <div class="hero-actions">
+        <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="btn btn-discord">⊹ Join the Discord</a>
+        <a href="#challenges" class="btn btn-outline">Submit a Beat</a>
+      </div>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <div class="wave-strip" id="ws1" aria-hidden="true"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-wrap">
+      <div class="about-left reveal">
+        <img class="about-logo-img" src="assets/images/logo-hero.jpg" alt="Limitless TrueVibe Logo">
+        <div class="about-badge" aria-label="200+ community members">
+          <span class="badge-num">200+</span>
+          <span class="badge-label">Artists &<br>Counting</span>
+        </div>
+      </div>
+      <div class="about-right reveal reveal-d1">
+        <span class="tag-line">Our Story</span>
+        <h2 class="about-headline">Built for producers,<br>by <em>producers</em></h2>
+        <p class="about-body">Limitless TrueVibe started as a <strong>lofi YouTube channel</strong>,a cozy corner of the internet inspired by the lo-fi aesthetic, where producers could submit tracks and reach real listeners. It was a simple idea built on a genuine love for the music.</p>
+        <p class="about-body">Word spread. People joined. And then the best question happened: <strong>"Do you only do lofi?"</strong> The answer was simple, no. We opened the doors to everything under the electronic music umbrella, and the community grew into something genuinely special.</p>
+        <p class="about-body">Today, LTV is a <strong>free, community-run platform</strong> for producers to share original music, win monthly beat challenges, get featured on community playlists, and hang out with people who genuinely get it. No label fees. No gatekeeping. Just music.</p>
+        <ul class="about-values">
+          <li><span class="value-dot" aria-hidden="true"></span> Always free. No submission fees, ever</li>
+          <li><span class="value-dot" aria-hidden="true"></span> Open to all genres of electronic music</li>
+          <li><span class="value-dot" aria-hidden="true"></span> Community-designed merch for challenge winners</li>
+          <li><span class="value-dot" aria-hidden="true"></span> Run by an artists, for artists</li>
+        </ul>
+        <div class="about-discord-cta">
+          <div class="discord-cta-text">
+            <p>The community lives on Discord</p>
+            <p>200+ producers, challenges, feedback, and good vibes</p>
+          </div>
+          <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="btn btn-discord">Join Free →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div id="stats">
+    <div class="stats-row">
+      <div class="stat-block reveal"><div class="stat-num">200+</div><div class="stat-lbl">Community Members</div></div>
+      <div class="stat-block reveal reveal-d1"><div class="stat-num">Monthly</div><div class="stat-lbl">Beat Challenges</div></div>
+      <div class="stat-block reveal reveal-d2"><div class="stat-num">∞</div><div class="stat-lbl">Genres Welcome</div></div>
+      <div class="stat-block reveal reveal-d3"><div class="stat-num">$0</div><div class="stat-lbl">Cost to Submit</div></div>
+    </div>
+  </div>
+
+  <div class="wave-strip" id="ws2" aria-hidden="true"></div>
+
+  <!-- BEAT CHALLENGES
+       Challenge banner text is driven by CURRENT_CHALLENGE in script.js.
+       Update that object to change what's shown without touching HTML. -->
+  <section id="challenges">
+    <div class="challenges-inner">
+      <div class="section-header reveal">
+        <span class="section-tag">Monthly Event</span>
+        <h2 class="section-h">Beat <em>Challenges</em></h2>
+        <p class="section-sub">Every month we drop a theme. You make a beat, the community votes, and the winner earns their "crown", a custom shirt designed by the community itself.</p>
+      </div>
+
+      <!-- Populated by renderChallengeBanner() in script.js -->
+      <div class="current-challenge-banner reveal" id="challengeBanner"></div>
+
+      <div class="challenge-layout">
+        <div class="challenge-info reveal reveal-d1">
+          <h3 class="challenge-sub-h">How It Works</h3>
+          <ol class="how-it-works">
+            <li class="step">
+              <span class="step-num" aria-hidden="true">01</span>
+              <div class="step-text"><h4>Theme Drops in Discord</h4><p>Each month a new challenge theme is announced in the Discord server; a genre, a mood, a concept. Anything to spark creativity.</p></div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">02</span>
+              <div class="step-text"><h4>Make Your Beat</h4><p>You've got the whole month. When you're ready, upload your .wav directly through the form below, no links needed.</p></div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">03</span>
+              <div class="step-text"><h4>Community Votes</h4><p>At the end of the month, the community listens and votes. Every member gets a say; community-run, not a committee.</p></div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">04</span>
+              <div class="step-text"><h4>Win the Crown 👑</h4><p>The winner is crowned Beat Master in Discord and receives a limited-run shirt designed by the community.</p></div>
+            </li>
+          </ol>
+          <div class="prize-card">
+            <h4>🏆 The Beat Master Prize</h4>
+            <p>Win and you'll earn the <strong>Beat Master</strong> title in Discord, get featured across LTV's channels, and receive a community-designed shirt. No entry fee, no purchase necessary. Just. Make. Music.</p>
+          </div>
+        </div>
+
+        <div class="challenge-form-wrap reveal reveal-d2">
+          <div class="form-card">
+            <h3>Submit Your Beat</h3>
+            <p class="form-sub">Paste a link to your track. We'll handle the rest.</p>
+            <form id="challengeForm" novalidate>
+              <input type="hidden" id="challengeId" name="challenge_id">
+              <input type="hidden" id="challengeNameField" name="challenge_name">
+              <div class="field">
+                <label for="artistName">Artist Name / Handle</label>
+                <input id="artistName" type="text" name="artist_name" placeholder="What do people call you?" required>
+              </div>
+              <div class="field">
+                <label for="artistEmail">Email</label>
+                <input id="artistEmail" type="email" name="email" placeholder="For winner notifications" required>
+              </div>
+              <div class="field">
+                <label for="discordHandle">Discord Username <span class="optional">(optional)</span></label>
+                <input id="discordHandle" type="text" name="discord" placeholder="@username">
+              </div>
+              <div class="field">
+                <label for="trackTitle">Track Title</label>
+                <input id="trackTitle" type="text" name="track_title" placeholder="What did you call it?" required>
+              </div>
+              <div class="field">
+                <label for="trackFile">Upload Your Track <span class="file-format">.wav only</span></label>
+                <div class="file-drop-zone" id="challengeDropZone">
+                  <div class="file-drop-inner">
+                    <span class="file-drop-icon" aria-hidden="true">🎵</span>
+                    <span class="file-drop-text">Drop your .wav here or <span class="file-browse-link">browse</span></span>
+                    <span class="file-drop-hint">WAV files only · Max 100MB</span>
+                  </div>
+                  <input id="trackFile" type="file" name="track_file" accept=".wav,audio/wav,audio/x-wav" required class="file-input-hidden">
+                </div>
+                <div class="file-selected" id="challengeFileSelected"></div>
+              </div>
+              <div class="field">
+                <label for="trackGenre">Genre / Subgenre</label>
+                <select id="trackGenre" name="genre" required>
+                  <option value="">Select a genre...</option>
+                  <option value="lofi">Lo-Fi</option>
+                  <option value="house">House</option>
+                  <option value="dnb">Drum &amp; Bass</option>
+                  <option value="ambient">Ambient / Chillout</option>
+                  <option value="trap">Trap / Hip-Hop</option>
+                  <option value="techno">Techno</option>
+                  <option value="synthwave">Synthwave / Retrowave</option>
+                  <option value="futurebass">Future Bass</option>
+                  <option value="idm">IDM / Experimental</option>
+                  <option value="other">Other Electronic</option>
+                </select>
+              </div>
+              <!-- Shown only for "mimic" type challenges like Doppelganger -->
+              <div class="field conditional" id="mimicField">
+                <label for="mimicArtist">Who are you mimicking?</label>
+                <input id="mimicArtist" type="text" name="mimic_artist" placeholder="Discord username or artist name">
+              </div>
+              <div class="field">
+                <label for="trackNotes">Anything you want us to know? <span class="optional">(optional)</span></label>
+                <textarea id="trackNotes" name="notes" placeholder="About your process, inspirations, shoutouts..."></textarea>
+              </div>
+              <button type="submit" class="submit-btn" id="challengeBtn">Submit to This Month's Challenge</button>
+              <p class="form-note">Free forever. By submitting you confirm this is your original work.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-strip" id="ws3" aria-hidden="true"></div>
+
+  <!-- PLAYLISTS
+       Embeds and banner driven by PLAYLISTS / CURRENT_PLAYLIST in script.js.
+       Add your real SoundCloud playlist URLs there. -->
+  <section id="playlists">
+    <div class="playlists-inner">
+      <div class="section-header reveal">
+        <span class="section-tag">Community Playlists</span>
+        <h2 class="section-h">Made by the <em>Community</em></h2>
+        <p class="section-sub">Every track on these playlists was submitted by an LTV member. We put them together every month or two — themed, community-built, posted on SoundCloud.</p>
+      </div>
+
+      <!-- Populated by renderPlaylistBanner() in script.js -->
+      <div class="current-playlist-banner reveal" id="playlistBanner"></div>
+
+      <div class="playlists-layout">
+        <!-- Populated by renderPlaylistEmbeds() in script.js -->
+        <div class="playlists-embeds reveal" id="playlistEmbeds"></div>
+
+        <div class="playlist-form-wrap reveal reveal-d1">
+          <div class="form-card">
+            <h3>Submit a Track</h3>
+            <p class="form-sub" id="playlistFormSub">Send us your track for the current playlist.</p>
+            <form id="playlistForm" novalidate>
+              <input type="hidden" id="playlistId" name="playlist_id">
+              <input type="hidden" id="playlistNameField" name="playlist_name">
+              <div class="field">
+                <label for="plArtistName">Artist Name / Handle</label>
+                <input id="plArtistName" type="text" name="artist_name" placeholder="What do people call you?" required>
+              </div>
+              <div class="field">
+                <label for="plArtistEmail">Email</label>
+                <input id="plArtistEmail" type="email" name="email" placeholder="So we can let you know if you made it" required>
+              </div>
+              <div class="field">
+                <label for="plDiscord">Discord Username <span class="optional">(optional)</span></label>
+                <input id="plDiscord" type="text" name="discord" placeholder="@username">
+              </div>
+              <div class="field">
+                <label for="plTrackTitle">Track Title</label>
+                <input id="plTrackTitle" type="text" name="track_title" placeholder="What's the track called?" required>
+              </div>
+              <div class="field">
+                <label for="plTrackFile">Upload Your Track <span class="file-format">.wav only</span></label>
+                <div class="file-drop-zone" id="playlistDropZone">
+                  <div class="file-drop-inner">
+                    <span class="file-drop-icon" aria-hidden="true">🎵</span>
+                    <span class="file-drop-text">Drop your .wav here or <span class="file-browse-link">browse</span></span>
+                    <span class="file-drop-hint">WAV files only · Max 100MB</span>
+                  </div>
+                  <input id="plTrackFile" type="file" name="track_file" accept=".wav,audio/wav,audio/x-wav" required class="file-input-hidden">
+                </div>
+                <div class="file-selected" id="playlistFileSelected"></div>
+              </div>
+              <div class="field">
+                <label for="plGenre">Genre / Subgenre <span class="optional">(optional)</span></label>
+                <select id="plGenre" name="genre">
+                  <option value="">Select a genre...</option>
+                  <option value="lofi">Lo-Fi</option>
+                  <option value="house">House</option>
+                  <option value="dnb">Drum &amp; Bass</option>
+                  <option value="ambient">Ambient / Chillout</option>
+                  <option value="trap">Trap / Hip-Hop</option>
+                  <option value="techno">Techno</option>
+                  <option value="synthwave">Synthwave / Retrowave</option>
+                  <option value="futurebass">Future Bass</option>
+                  <option value="idm">IDM / Experimental</option>
+                  <option value="other">Other Electronic</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="plNotes">Anything you want us to know? <span class="optional">(optional)</span></label>
+                <textarea id="plNotes" name="notes" placeholder="Vibe of the track, inspiration, shoutouts..."></textarea>
+              </div>
+              <button type="submit" class="submit-btn" id="playlistBtn">Submit for This Playlist</button>
+              <p class="form-note">Free forever. By submitting you confirm this is your original work.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN CTA -->
+  <section id="join">
+    <div class="join-inner">
+      <div class="reveal">
+        <span class="section-tag">The Community</span>
+        <h2 class="section-h join-h">You Belong <em>Here</em></h2>
+        <p class="join-body">Whether you've been producing for 10 years or just downloaded your first DAW, if you make music, you have a place in the LTV community. No gatekeeping. No ego. Just people who love making sounds.</p>
+      </div>
+      <ul class="join-facts reveal reveal-d1">
+        <li class="join-fact">Always free to join</li>
+        <li class="join-fact">All skill levels welcome</li>
+        <li class="join-fact">All electronic genres</li>
+        <li class="join-fact">Monthly beat challenges</li>
+        <li class="join-fact">Real feedback from real producers</li>
+      </ul>
+      <div class="reveal reveal-d2">
+        <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="btn btn-discord btn-join-big">⊹ Join the Discord Community</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <img class="footer-logo" src="assets/images/logo-no-bg.png" alt="Limitless TrueVibe">
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="#about">About</a>
+      <a href="#challenges">Beat Challenge</a>
+      <a href="#playlists">Playlists</a>
+      <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener">Discord</a>
+    </nav>
+    <div class="footer-socials">
+      <a href="https://youtube.com/@YOUR_CHANNEL" target="_blank" rel="noopener" class="soc" aria-label="YouTube">YT</a>
+      <a href="https://soundcloud.com/YOUR_PAGE" target="_blank" rel="noopener" class="soc" aria-label="SoundCloud">SC</a>
+      <a href="https://bandcamp.com/YOUR_PAGE" target="_blank" rel="noopener" class="soc" aria-label="Bandcamp">BC</a>
+      <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="soc" aria-label="Discord">DC</a>
+    </div>
+    <p class="footer-copy">&copy; <span id="footerYear"></span> Limitless TrueVibe &middot; A free platform, forever &middot; Made by a producer, for producers</p>
+  </footer>
+
+  <!-- ADMIN PANEL — only visible at ?admin=1 in the URL -->
+  <button class="admin-fab" id="adminFab" aria-label="Open admin panel">⚙ Manage Content</button>
+  <div class="admin-modal-overlay" id="adminOverlay">
+    <div class="admin-modal">
+      <button class="admin-close" id="adminClose" aria-label="Close">✕</button>
+      <h2>⚙ Manage Content</h2>
+      <p class="admin-sub">Changes save to your browser and appear immediately. See README.md to make them permanent in script.js.</p>
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-panel="challenge">Beat Challenge</button>
+        <button class="admin-tab" data-panel="playlist">Playlist</button>
+      </div>
+      <div class="admin-panel active" id="adminPanelChallenge">
+        <div class="field"><label for="adminChallengeTitle">Challenge Name</label><input id="adminChallengeTitle" type="text" placeholder="e.g. Doppelganger"></div>
+        <div class="field"><label for="adminChallengeDesc">Description</label><textarea id="adminChallengeDesc" placeholder="e.g. Create a track in the style of anyone in the Discord..."></textarea></div>
+        <div class="field"><label for="adminChallengeDeadline">Deadline</label><input id="adminChallengeDeadline" type="text" placeholder="e.g. May 31, 2025"></div>
+        <div class="field">
+          <label for="adminChallengeType">Challenge Type</label>
+          <select id="adminChallengeType">
+            <option value="standard">Standard (make a beat)</option>
+            <option value="mimic">Mimic / Doppelganger (copy someone's style)</option>
+          </select>
+        </div>
+        <button class="admin-save-btn" id="saveChallenge">Save Challenge</button>
+      </div>
+      <div class="admin-panel" id="adminPanelPlaylist">
+        <div class="field"><label for="adminPlaylistTitle">Playlist Name</label><input id="adminPlaylistTitle" type="text" placeholder="e.g. LTV Vol. 3 — Late Night Drives"></div>
+        <div class="field"><label for="adminPlaylistDesc">Description / Theme</label><textarea id="adminPlaylistDesc" placeholder="e.g. Anything that sounds like driving alone at 2am..."></textarea></div>
+        <div class="field"><label for="adminPlaylistDeadline">Submission Deadline</label><input id="adminPlaylistDeadline" type="text" placeholder="e.g. June 15, 2025"></div>
+        <button class="admin-save-btn" id="savePlaylist">Save Playlist</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
