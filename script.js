@@ -32,10 +32,10 @@
 ============================================================================= */
 
 const CONFIG = {
-  discord:      'https://discord.gg/YOUR_INVITE',
-  youtube:      'https://youtube.com/@YOUR_CHANNEL',
-  soundcloud:   'https://soundcloud.com/YOUR_PAGE',
-  bandcamp:     'https://bandcamp.com/YOUR_PAGE',
+  discord:      'https://discord.gg/https://discord.gg/AFdeZHfDZNINVITE',
+  youtube:      'http://youtube.com/@limitlesstruevibe',
+  soundcloud:   'https://soundcloud.com/limitless_truevibe',
+  bandcamp:     'https://limitlesstruevibe.bandcamp.com/album/starlit-signals-a-truevibe-compilation',
 
   // Formspree endpoint for form submissions (email delivery).
   // Leave empty to use the built-in localStorage database only.
