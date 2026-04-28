@@ -36,6 +36,8 @@ const CONFIG = {
   youtube:      'http://youtube.com/@limitlesstruevibe',
   soundcloud:   'https://soundcloud.com/limitless_truevibe',
   bandcamp:     'https://limitlesstruevibe.bandcamp.com/album/starlit-signals-a-truevibe-compilation',
+  supabaseUrl:  'https://bqcjabpybovkpdczfdbv.supabase.co',
+  supabaseKey:  'sb_publishable_uyXl-TEe2bM0mOstjywkwg__eTiuyCW',
 
   // Formspree endpoint for form submissions (email delivery).
   // Leave empty to use the built-in localStorage database only.
@@ -704,15 +706,18 @@ function saveDB(db) {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
 }
 
-function saveSubmission(type, data) {
-  const db     = getDB();
-  const bucket = type === 'challenge' ? data.challenge_id : data.playlist_id;
-
-  if (!db[type])         db[type]         = {};
-  if (!db[type][bucket]) db[type][bucket] = [];
-
-  db[type][bucket].push(data);
-  saveDB(db);
+async function saveSubmission(type, data) {
+  const table = type === 'challenge' ? 'challenge_submissions' : 'playlist_submissions';
+  await fetch(`${CONFIG.supabaseUrl}/rest/v1/${table}`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'apikey':        CONFIG.supabaseKey,
+      'Authorization': `Bearer ${CONFIG.supabaseKey}`,
+      'Prefer':        'return=minimal',
+    },
+    body: JSON.stringify(data),
+  });
 }
 
 // Public API — accessible in browser console as LTV.*
