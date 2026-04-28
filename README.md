@@ -14,7 +14,7 @@ ltv-website/
 ├── assets/
 │   └── images/
 │       ├── logo-hero.jpg    ← Purple mountain logo (hero + about sections)
-│       └── logo-dark.png    ← Dark background logo (nav + footer)
+│       └── logo-no-bg.png    ← Dark background logo (nav + footer)
 └── README.md           ← This file
 ```
 
