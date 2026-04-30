@@ -712,6 +712,22 @@
   margin-top: 0.4rem;
 }
 
+.repeat-winner-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f0c060;
+  background: rgba(240,192,96,0.12);
+  border: 1px solid rgba(240,192,96,0.35);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  margin-left: 0.4rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
 .past-empty {
   color: var(--text-muted);
   font-size: 0.9rem;

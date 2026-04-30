@@ -630,19 +630,39 @@ async function loadPastChallenges() {
     // We reverse the display order so the newest still appears at the top visually.
     const displayOrder = [...results].reverse();
 
-    grid.innerHTML = displayOrder.map((r, i) => `
-      <div class="past-challenge-card reveal">
-        <div class="past-challenge-num">#${results.length - i}</div>
-        <div class="past-challenge-crown">👑</div>
-        <div class="past-challenge-title">${escapeHTML(r.challenge_title || 'Beat Challenge')}</div>
-        <div class="past-challenge-winner">${escapeHTML(r.winner_name)}</div>
-        <div class="past-challenge-track">"${escapeHTML(r.winner_track)}"</div>
-        ${r.winner_sc_url
-          ? `<a href="${r.winner_sc_url}" target="_blank" rel="noopener" class="past-sc-link">SoundCloud →</a>`
-          : ''}
-        <div class="past-challenge-date">${formatDate(r.decided_at)}</div>
-      </div>
-    `).join('');
+    // Count cumulative wins per artist walking oldest to newest (results order).
+    // This means the badge only appears from the second win onward — it reflects
+    // how many times they've won *at that point in history*, not their total today.
+    const winCounts = {};
+    const winCountAtEntry = results.map(r => {
+      const name = r.winner_name;
+      winCounts[name] = (winCounts[name] || 0) + 1;
+      return winCounts[name];
+    });
+
+    grid.innerHTML = displayOrder.map((r, i) => {
+      const resultsIndex    = results.length - 1 - i;
+      const winsAtThisPoint = winCountAtEntry[resultsIndex];
+      const badgeHTML       = winsAtThisPoint >= 2
+        ? `<span class="repeat-winner-badge">${winsAtThisPoint}x Winner</span>`
+        : '';
+
+      return `
+        <div class="past-challenge-card reveal">
+          <div class="past-challenge-num">#${results.length - i}</div>
+          <div class="past-challenge-crown">👑</div>
+          <div class="past-challenge-title">${escapeHTML(r.challenge_title || 'Beat Challenge')}</div>
+          <div class="past-challenge-winner">
+            ${escapeHTML(r.winner_name)}${badgeHTML}
+          </div>
+          <div class="past-challenge-track">"${escapeHTML(r.winner_track)}"</div>
+          ${r.winner_sc_url
+            ? `<a href="${r.winner_sc_url}" target="_blank" rel="noopener" class="past-sc-link">SoundCloud →</a>`
+            : ''}
+          <div class="past-challenge-date">${formatDate(r.decided_at)}</div>
+        </div>
+      `;
+    }).join('');
 
     // Trigger reveal
     requestAnimationFrame(() => {
