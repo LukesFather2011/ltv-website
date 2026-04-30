@@ -616,7 +616,7 @@ async function loadPastChallenges() {
 
   try {
     const res     = await supabaseFetch(
-      `challenge_results?order=decided_at.desc`,
+      `challenge_results?order=decided_at.asc`,
       { method: 'GET' }
     );
     const results = await res.json();
@@ -626,7 +626,11 @@ async function loadPastChallenges() {
       return;
     }
 
-    grid.innerHTML = results.map((r, i) => `
+    // Render oldest-first so #1 = the very first challenge, counting up from there.
+    // We reverse the display order so the newest still appears at the top visually.
+    const displayOrder = [...results].reverse();
+
+    grid.innerHTML = displayOrder.map((r, i) => `
       <div class="past-challenge-card reveal">
         <div class="past-challenge-num">#${results.length - i}</div>
         <div class="past-challenge-crown">👑</div>
