@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Limitless TrueVibe — Cast your vote for this month's Beat Challenge.">
+  <meta name="theme-color" content="#161b31">
+  <title>Vote — Limitless TrueVibe Beat Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="voting.css">
+  <link rel="icon" type="image/png" href="assets/images/logo-hero.jpg">
+</head>
+<body class="voting-page">
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo-link">
+      <img class="nav-logo" src="assets/images/logo-no-bg.png" alt="Limitless TrueVibe">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#challenges">Challenges</a></li>
+      <li><a href="index.html#playlists">Playlists</a></li>
+      <li><a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="nav-discord"><span>⊹</span> Discord</a></li>
+    </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html#about" class="mobile-link">About</a></li>
+      <li><a href="index.html#challenges" class="mobile-link">Challenges</a></li>
+      <li><a href="index.html#playlists" class="mobile-link">Playlists</a></li>
+      <li><a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="mobile-link mobile-discord">Join the Discord</a></li>
+    </ul>
+  </div>
+
+  <!-- VOTING HERO -->
+  <section class="voting-hero">
+    <div class="voting-hero-glow" aria-hidden="true"></div>
+    <div class="voting-hero-content">
+      <div class="hero-eyebrow">
+        <span class="live-dot" aria-hidden="true"></span>
+        Beat Challenge — Community Vote
+      </div>
+      <h1 class="voting-title">Cast Your <em>Vote</em></h1>
+      <p class="voting-subtitle" id="votingSubtitle">Listen to every track, then rate them. Your vote shapes the crown.</p>
+      <div class="voting-meta" id="votingMeta">
+        <!-- Populated by JS: challenge name + voting closes countdown -->
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN VOTING AREA -->
+  <main class="voting-main" id="votingMain">
+
+    <!-- STATE: Loading -->
+    <div class="voting-state" id="stateLoading">
+      <div class="loading-bars" aria-label="Loading tracks">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <p>Loading this month's tracks…</p>
+    </div>
+
+    <!-- STATE: Not yet open -->
+    <div class="voting-state hidden" id="stateNotOpen">
+      <div class="state-icon">⏳</div>
+      <h2>Voting isn't open yet</h2>
+      <p>Submissions just closed. We're getting the tracks ready — voting opens soon. Check Discord for the announcement.</p>
+      <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="btn btn-discord" style="margin-top:1.5rem;">Join the Discord</a>
+    </div>
+
+    <!-- STATE: Already voted -->
+    <div class="voting-state hidden" id="stateVoted">
+      <div class="state-icon">✅</div>
+      <h2>You've already voted</h2>
+      <p>Your ratings have been recorded. Results will be announced in Discord when voting closes.</p>
+      <div class="voted-countdown" id="votedCountdown"></div>
+      <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="btn btn-discord" style="margin-top:1.5rem;">Watch Discord for Results</a>
+    </div>
+
+    <!-- STATE: Voting closed / Results -->
+    <div class="voting-state hidden" id="stateClosed">
+      <div class="state-icon">🏆</div>
+      <h2>Voting has closed</h2>
+      <p id="stateClosedMsg">The community has spoken. Results have been tallied and the winner will be announced in Discord.</p>
+      <div id="resultsDisplay"></div>
+      <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="btn btn-discord" style="margin-top:1.5rem;">See the Announcement</a>
+    </div>
+
+    <!-- STATE: Active voting -->
+    <div class="voting-state hidden" id="stateActive">
+
+      <div class="voting-instructions reveal">
+        <span class="section-tag">How to vote</span>
+        <p>Listen to each track below. Give every track a rating from 1–10. When you're done, hit <strong>Submit All Votes</strong> at the bottom. You can only vote once — make it count.</p>
+      </div>
+
+      <!-- Track cards injected here by JS -->
+      <div class="tracks-grid" id="tracksGrid"></div>
+
+      <!-- Sticky submit bar -->
+      <div class="vote-submit-bar" id="voteSubmitBar">
+        <div class="vote-submit-inner">
+          <div class="vote-progress">
+            <span id="ratedCount">0</span> of <span id="totalCount">0</span> tracks rated
+            <div class="vote-progress-track">
+              <div class="vote-progress-fill" id="voteProgressFill"></div>
+            </div>
+          </div>
+          <button class="submit-btn vote-submit-btn" id="voteSubmitBtn" disabled>
+            Submit All Votes
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAST CHALLENGES TAB -->
+    <div class="past-challenges-section" id="pastChallengesSection">
+      <div class="section-header" style="margin-top:5rem;">
+        <span class="section-tag">Hall of Fame</span>
+        <h2 class="section-h">Past <em>Champions</em></h2>
+        <p class="section-sub">Every Beat Master, every crown, every month.</p>
+      </div>
+      <div class="past-challenges-grid" id="pastChallengesGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <img class="footer-logo" src="assets/images/logo-no-bg.png" alt="Limitless TrueVibe">
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="index.html#about">About</a>
+      <a href="index.html#challenges">Beat Challenge</a>
+      <a href="index.html#playlists">Playlists</a>
+      <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener">Discord</a>
+    </nav>
+    <p class="footer-copy">&copy; <span id="footerYear"></span> Limitless TrueVibe &middot; A free platform, forever</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="voting.js"></script>
+</body>
+</html>

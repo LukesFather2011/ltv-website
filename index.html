@@ -27,6 +27,7 @@
       <li><a href="#about">About</a></li>
       <li><a href="#challenges">Challenges</a></li>
       <li><a href="#playlists">Playlists</a></li>
+      <li><a href="voting.html" class="nav-voting" id="navVotingLink" style="display:none;">🗳 Vote</a></li>
       <li><a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="nav-discord"><span>⊹</span> Discord</a></li>
     </ul>
     <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
@@ -39,13 +40,12 @@
       <li><a href="#about" class="mobile-link">About</a></li>
       <li><a href="#challenges" class="mobile-link">Challenges</a></li>
       <li><a href="#playlists" class="mobile-link">Playlists</a></li>
+      <li><a href="voting.html" class="mobile-link mobile-voting" id="mobileVotingLink" style="display:none;">🗳 Cast Your Vote</a></li>
       <li><a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener" class="mobile-link mobile-discord">Join the Discord</a></li>
     </ul>
   </div>
 
-  <!-- HERO
-       The canvas waveform spans the full width behind the logo.
-       drawHeroWave() in script.js handles rendering + animation. -->
+  <!-- HERO -->
   <section id="hero">
     <div class="hero-glow" aria-hidden="true"></div>
     <div class="particles" id="particles" aria-hidden="true"></div>
@@ -73,6 +73,12 @@
 
   <div class="wave-strip" id="ws1" aria-hidden="true"></div>
 
+  <!-- WINNER BANNER
+       Populated automatically by renderWinnerBanner() in script.js
+       when a challenge result exists in Supabase.
+       Hidden by default — becomes visible only when there's a winner. -->
+  <div id="winnerBanner" class="winner-banner-section"></div>
+
   <!-- ABOUT -->
   <section id="about">
     <div class="about-wrap">
@@ -86,14 +92,14 @@
       <div class="about-right reveal reveal-d1">
         <span class="tag-line">Our Story</span>
         <h2 class="about-headline">Built for producers,<br>by <em>producers</em></h2>
-        <p class="about-body">Limitless TrueVibe started as a <strong>lofi YouTube channel</strong>,a cozy corner of the internet inspired by the lo-fi aesthetic, where producers could submit tracks and reach real listeners. It was a simple idea built on a genuine love for the music.</p>
+        <p class="about-body">Limitless TrueVibe started as a <strong>lofi YouTube channel</strong>, a cozy corner of the internet inspired by the lo-fi aesthetic, where producers could submit tracks and reach real listeners. It was a simple idea built on a genuine love for the music.</p>
         <p class="about-body">Word spread. People joined. And then the best question happened: <strong>"Do you only do lofi?"</strong> The answer was simple, no. We opened the doors to everything under the electronic music umbrella, and the community grew into something genuinely special.</p>
         <p class="about-body">Today, LTV is a <strong>free, community-run platform</strong> for producers to share original music, win monthly beat challenges, get featured on community playlists, and hang out with people who genuinely get it. No label fees. No gatekeeping. Just music.</p>
         <ul class="about-values">
           <li><span class="value-dot" aria-hidden="true"></span> Always free. No submission fees, ever</li>
           <li><span class="value-dot" aria-hidden="true"></span> Open to all genres of electronic music</li>
           <li><span class="value-dot" aria-hidden="true"></span> Community-designed merch for challenge winners</li>
-          <li><span class="value-dot" aria-hidden="true"></span> Run by an artists, for artists</li>
+          <li><span class="value-dot" aria-hidden="true"></span> Run by an artist, for artists</li>
         </ul>
         <div class="about-discord-cta">
           <div class="discord-cta-text">
@@ -118,15 +124,13 @@
 
   <div class="wave-strip" id="ws2" aria-hidden="true"></div>
 
-  <!-- BEAT CHALLENGES
-       Challenge banner text is driven by CURRENT_CHALLENGE in script.js.
-       Update that object to change what's shown without touching HTML. -->
+  <!-- BEAT CHALLENGES -->
   <section id="challenges">
     <div class="challenges-inner">
       <div class="section-header reveal">
         <span class="section-tag">Monthly Event</span>
         <h2 class="section-h">Beat <em>Challenges</em></h2>
-        <p class="section-sub">Every month we drop a theme. You make a beat, the community votes, and the winner earns their "crown", a custom shirt designed by the community itself.</p>
+        <p class="section-sub">Every month we drop a theme. You make a beat, the community votes, and the winner earns their "crown" — a custom shirt designed by the community itself.</p>
       </div>
 
       <!-- Populated by renderChallengeBanner() in script.js -->
@@ -138,15 +142,15 @@
           <ol class="how-it-works">
             <li class="step">
               <span class="step-num" aria-hidden="true">01</span>
-              <div class="step-text"><h4>Theme Drops in Discord</h4><p>Each month a new challenge theme is announced in the Discord server; a genre, a mood, a concept. Anything to spark creativity.</p></div>
+              <div class="step-text"><h4>Theme Drops in Discord</h4><p>Each month a new challenge theme is announced in the Discord server — a genre, a mood, a concept. Anything to spark creativity.</p></div>
             </li>
             <li class="step">
               <span class="step-num" aria-hidden="true">02</span>
-              <div class="step-text"><h4>Make Your Beat</h4><p>You've got the whole month. When you're ready, upload your .wav directly through the form below, no links needed.</p></div>
+              <div class="step-text"><h4>Make Your Beat</h4><p>You've got the whole month. When you're ready, upload your .wav directly through the form. No links needed.</p></div>
             </li>
             <li class="step">
               <span class="step-num" aria-hidden="true">03</span>
-              <div class="step-text"><h4>Community Votes</h4><p>At the end of the month, the community listens and votes. Every member gets a say; community-run, not a committee.</p></div>
+              <div class="step-text"><h4>Community Votes</h4><p>At the end of the month, the community listens and votes anonymously. Every member gets a say — community-run, not a committee.</p></div>
             </li>
             <li class="step">
               <span class="step-num" aria-hidden="true">04</span>
@@ -162,7 +166,7 @@
         <div class="challenge-form-wrap reveal reveal-d2">
           <div class="form-card">
             <h3>Submit Your Beat</h3>
-            <p class="form-sub">Paste a link to your track. We'll handle the rest.</p>
+            <p class="form-sub">Upload your track. We'll handle the rest.</p>
             <form id="challengeForm" novalidate>
               <input type="hidden" id="challengeId" name="challenge_id">
               <input type="hidden" id="challengeNameField" name="challenge_name">
@@ -210,7 +214,6 @@
                   <option value="other">Other Electronic</option>
                 </select>
               </div>
-              <!-- Shown only for "mimic" type challenges like Doppelganger -->
               <div class="field conditional" id="mimicField">
                 <label for="mimicArtist">Who are you mimicking?</label>
                 <input id="mimicArtist" type="text" name="mimic_artist" placeholder="Discord username or artist name">
@@ -230,9 +233,7 @@
 
   <div class="wave-strip" id="ws3" aria-hidden="true"></div>
 
-  <!-- PLAYLISTS
-       Embeds and banner driven by PLAYLISTS / CURRENT_PLAYLIST in script.js.
-       Add your real SoundCloud playlist URLs there. -->
+  <!-- PLAYLISTS -->
   <section id="playlists">
     <div class="playlists-inner">
       <div class="section-header reveal">
@@ -340,6 +341,7 @@
       <a href="#about">About</a>
       <a href="#challenges">Beat Challenge</a>
       <a href="#playlists">Playlists</a>
+      <a href="voting.html">Vote</a>
       <a href="https://discord.gg/AFdeZHfDZN" target="_blank" rel="noopener">Discord</a>
     </nav>
     <div class="footer-socials">
@@ -357,15 +359,19 @@
     <div class="admin-modal">
       <button class="admin-close" id="adminClose" aria-label="Close">✕</button>
       <h2>⚙ Manage Content</h2>
-      <p class="admin-sub">Changes save to your browser and appear immediately. See README.md to make them permanent in script.js.</p>
+      <p class="admin-sub">Changes save to your browser and appear immediately. Copy updated values into script.js to make them permanent.</p>
       <div class="admin-tabs">
         <button class="admin-tab active" data-panel="challenge">Beat Challenge</button>
         <button class="admin-tab" data-panel="playlist">Playlist</button>
+        <button class="admin-tab" data-panel="winner">Winner</button>
       </div>
+
+      <!-- Challenge tab -->
       <div class="admin-panel active" id="adminPanelChallenge">
         <div class="field"><label for="adminChallengeTitle">Challenge Name</label><input id="adminChallengeTitle" type="text" placeholder="e.g. Doppelganger"></div>
         <div class="field"><label for="adminChallengeDesc">Description</label><textarea id="adminChallengeDesc" placeholder="e.g. Create a track in the style of anyone in the Discord..."></textarea></div>
-        <div class="field"><label for="adminChallengeDeadline">Deadline</label><input id="adminChallengeDeadline" type="text" placeholder="e.g. May 31, 2025"></div>
+        <div class="field"><label for="adminChallengeDeadline">Deadline (display text)</label><input id="adminChallengeDeadline" type="text" placeholder="e.g. May 31, 2026"></div>
+        <div class="field"><label for="adminDeadlineDate">Deadline Date (for auto-locking)</label><input id="adminDeadlineDate" type="date" placeholder="YYYY-MM-DD"></div>
         <div class="field">
           <label for="adminChallengeType">Challenge Type</label>
           <select id="adminChallengeType">
@@ -375,15 +381,48 @@
         </div>
         <button class="admin-save-btn" id="saveChallenge">Save Challenge</button>
       </div>
+
+      <!-- Playlist tab -->
       <div class="admin-panel" id="adminPanelPlaylist">
         <div class="field"><label for="adminPlaylistTitle">Playlist Name</label><input id="adminPlaylistTitle" type="text" placeholder="e.g. LTV Vol. 3 — Late Night Drives"></div>
         <div class="field"><label for="adminPlaylistDesc">Description / Theme</label><textarea id="adminPlaylistDesc" placeholder="e.g. Anything that sounds like driving alone at 2am..."></textarea></div>
-        <div class="field"><label for="adminPlaylistDeadline">Submission Deadline</label><input id="adminPlaylistDeadline" type="text" placeholder="e.g. June 15, 2025"></div>
+        <div class="field"><label for="adminPlaylistDeadline">Submission Deadline (display text)</label><input id="adminPlaylistDeadline" type="text" placeholder="e.g. June 15, 2026"></div>
+        <div class="field"><label for="adminPlaylistDeadlineDate">Deadline Date (for auto-locking)</label><input id="adminPlaylistDeadlineDate" type="date" placeholder="YYYY-MM-DD"></div>
         <button class="admin-save-btn" id="savePlaylist">Save Playlist</button>
       </div>
+
+      <!-- Winner tab — add SC link after announcing in Discord -->
+      <div class="admin-panel" id="adminPanelWinner">
+        <p class="admin-sub" style="margin-bottom:1rem;">After announcing the winner in Discord, paste their SoundCloud profile URL here so it shows on the site.</p>
+        <div class="field"><label for="adminWinnerSC">Winner's SoundCloud URL</label><input id="adminWinnerSC" type="url" placeholder="https://soundcloud.com/artistname"></div>
+        <button class="admin-save-btn" id="saveWinnerSC">Save &amp; Show on Site</button>
+      </div>
+
     </div>
   </div>
 
   <script src="script.js"></script>
+
+  <!-- Show/hide voting nav link based on current phase -->
+  <script>
+    (function() {
+      // Inline phase check so nav voting link shows/hides before first paint
+      const stored = localStorage.getItem('ltv_admin_challenge');
+      const challenge = stored ? Object.assign({}, {
+        deadlineDate: '2026-05-15'
+      }, JSON.parse(stored)) : { deadlineDate: '2026-05-15' };
+
+      if (!challenge.deadlineDate) return;
+      const CST = 6 * 60 * 60 * 1000;
+      const dl  = new Date(challenge.deadlineDate + 'T23:59:59Z').getTime() + CST;
+      const vo  = dl  + 24 * 60 * 60 * 1000;
+      const vc  = vo  + 48 * 60 * 60 * 1000;
+      const now = Date.now();
+      if (now >= vo && now < vc) {
+        document.getElementById('navVotingLink').style.display   = '';
+        document.getElementById('mobileVotingLink').style.display = '';
+      }
+    })();
+  </script>
 </body>
 </html>
