@@ -504,7 +504,7 @@ function initChallengeForm() {
     return;
   }
 
-  form.addEventListener('submit', e => handleFormSubmit(e, 'challenge'));
+  form.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(e, 'challenge'); });
 }
 
 
@@ -543,7 +543,7 @@ function initPlaylistForm() {
   const form = document.getElementById('playlistForm');
   if (!form) return;
   initDropZone('playlistDropZone', 'plTrackFile', 'playlistFileSelected');
-  form.addEventListener('submit', e => handleFormSubmit(e, 'playlist'));
+  form.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(e, 'playlist'); });
 }
 
 
@@ -606,7 +606,7 @@ function applyFile(file, input, zone, feedback) {
    SHARED FORM HANDLER
 ============================================================================= */
 
-function handleFormSubmit(e, type) {
+async function handleFormSubmit(e, type) {
   e.preventDefault();
   const form  = e.target;
   const btnId = type === 'challenge' ? 'challengeBtn' : 'playlistBtn';
@@ -619,6 +619,7 @@ function handleFormSubmit(e, type) {
     return;
   }
 
+  // Collect all text fields
   const data = {};
   new FormData(form).forEach((val, key) => {
     if (typeof val === 'string') data[key] = val;
@@ -626,14 +627,58 @@ function handleFormSubmit(e, type) {
   data.submitted_at = new Date().toISOString();
   data.type = type;
 
+  // Grab the WAV file
   const fileInputId = type === 'challenge' ? 'trackFile' : 'plTrackFile';
   const fileInput   = document.getElementById(fileInputId);
-  if (fileInput?.files?.[0]) {
-    data.track_filename = fileInput.files[0].name;
-    data.track_filesize = fileInput.files[0].size;
+  const file        = fileInput?.files?.[0];
+
+  if (file) {
+    data.track_filename = file.name;
+    data.track_filesize = file.size;
   }
 
-  saveSubmission(type, data);
+  // Lock the button and show uploading state
+  btn.disabled    = true;
+  btn.textContent = file ? 'Uploading track…' : 'Submitting…';
+
+  // Upload WAV to Supabase Storage if we have a file
+  if (file) {
+    try {
+      const folderId = data.challenge_id || data.playlist_id || type;
+      // Sanitise filename — remove spaces and special chars
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path     = `${type}/${folderId}/${Date.now()}_${safeName}`;
+
+      const uploadRes = await fetch(
+        `${CONFIG.supabaseUrl}/storage/v1/object/submissions/${path}`,
+        {
+          method:  'POST',
+          headers: {
+            'apikey':        CONFIG.supabaseKey,
+            'Authorization': `Bearer ${CONFIG.supabaseKey}`,
+            'Content-Type':  'audio/wav',
+          },
+          body: file,
+        }
+      );
+
+      if (uploadRes.ok) {
+        // Public streaming URL — works because bucket is set to Public
+        data.audio_url = `${CONFIG.supabaseUrl}/storage/v1/object/public/submissions/${path}`;
+      } else {
+        // Upload failed but we still save the metadata — don't block the submission
+        console.warn('WAV upload failed:', await uploadRes.text());
+      }
+    } catch (uploadErr) {
+      // Network error on upload — still save metadata, just without audio_url
+      console.warn('WAV upload error:', uploadErr);
+    }
+
+    btn.textContent = 'Saving submission…';
+  }
+
+  // Save submission record to Supabase (with audio_url if upload succeeded)
+  await saveSubmission(type, data);
 
   if (CONFIG.formEndpoint) {
     submitToFormspree(form, btn, data, type);
