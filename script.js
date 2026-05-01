@@ -625,7 +625,6 @@ async function handleFormSubmit(e, type) {
     if (typeof val === 'string') data[key] = val;
   });
   data.submitted_at = new Date().toISOString();
-  data.type = type;
 
   // Grab the WAV file
   const fileInputId = type === 'challenge' ? 'trackFile' : 'plTrackFile';
