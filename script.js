@@ -41,11 +41,7 @@ const CONFIG = {
   supabaseKey:  'sb_publishable_uyXl-TEe2bM0mOstjywkwg__eTiuyCW',
   formEndpoint: '',
 
-  // Timing config
-  // Submissions close at 11:59 PM CST on the deadline date.
-  // Voting opens this many hours after the submission deadline.
-  votingDelayHours: 24,
-  // Voting stays open for this many hours after it opens.
+  votingDelayHours:    24,
   votingDurationHours: 48,
 
   particleCount: 35,
@@ -55,13 +51,6 @@ const CONFIG = {
 
 /* =============================================================================
    2. CURRENT CHALLENGE
-   — UPDATE THIS each month. Change `id` every new challenge.
-   —
-   — deadlineDate: ISO date string "YYYY-MM-DD" — submissions close at
-   —              11:59 PM CST (UTC-6) on this date, automatically.
-   —              Voting opens 24h later, runs for 48h, then closes.
-   —
-   — type: "standard" | "mimic"
 ============================================================================= */
 
 const CURRENT_CHALLENGE = {
@@ -69,7 +58,7 @@ const CURRENT_CHALLENGE = {
   title:        'Doppelganger',
   desc:         'Create a track in the style of any artist in the Discord. It could be their signature sound, their usual BPM, their go-to genre — just make us feel like it could have been them.',
   deadline:     'May 15, 2026',
-  deadlineDate: '2026-05-15',   // ← ISO date, used for automatic phase switching
+  deadlineDate: '2026-05-15',
   type:         'mimic',
 };
 
@@ -220,9 +209,9 @@ function initParticles() {
   if (!container) return;
   const colors = ['#d181a8', '#fcffde', '#60376b'];
   for (let i = 0; i < CONFIG.particleCount; i++) {
-    const p = document.createElement('div');
+    const p    = document.createElement('div');
     p.className = 'particle';
-    const size = Math.random() * 3 + 1;
+    const size  = Math.random() * 3 + 1;
     p.style.cssText = `
       left: ${Math.random() * 100}%;
       bottom: ${Math.random() * 40}%;
@@ -291,34 +280,18 @@ function initDynamicYear() {
 
 /* =============================================================================
    12. CHALLENGE PHASE ENGINE
-   — Computes the current phase based on deadlineDate + timing config.
-   —
-   — Phases:
-   —   "open"    — submissions are being accepted right now
-   —   "pending" — submissions closed, voting hasn't opened yet (24h window)
-   —   "voting"  — voting page is live, submissions locked
-   —   "closed"  — voting has ended, winner should be displayed
-   —
-   — All times are computed in CST (UTC-6). The deadline is set to
-   — 23:59:59 CST on the deadlineDate.
 ============================================================================= */
 
 function getChallengePhase(challenge) {
   if (!challenge.deadlineDate) return 'open';
 
-  const CST_OFFSET_MS = 6 * 60 * 60 * 1000; // CST = UTC-6
-
-  // Deadline: 11:59:59 PM CST on deadlineDate
-  const deadlineUTC = new Date(`${challenge.deadlineDate}T23:59:59Z`).getTime() + CST_OFFSET_MS;
-
-  // Voting opens: deadline + votingDelayHours
-  const votingOpenUTC   = deadlineUTC + CONFIG.votingDelayHours   * 60 * 60 * 1000;
-  // Voting closes: votingOpen + votingDurationHours
-  const votingCloseUTC  = votingOpenUTC + CONFIG.votingDurationHours * 60 * 60 * 1000;
-
+  const CST_OFFSET_MS  = 6 * 60 * 60 * 1000;
+  const deadlineUTC    = new Date(`${challenge.deadlineDate}T23:59:59Z`).getTime() + CST_OFFSET_MS;
+  const votingOpenUTC  = deadlineUTC   + CONFIG.votingDelayHours    * 60 * 60 * 1000;
+  const votingCloseUTC = votingOpenUTC + CONFIG.votingDurationHours * 60 * 60 * 1000;
   const now = Date.now();
 
-  if (now < deadlineUTC)   return 'open';
+  if (now < deadlineUTC)    return 'open';
   if (now < votingOpenUTC)  return 'pending';
   if (now < votingCloseUTC) return 'voting';
   return 'closed';
@@ -327,7 +300,7 @@ function getChallengePhase(challenge) {
 function getPhaseTimings(challenge) {
   const CST_OFFSET_MS  = 6 * 60 * 60 * 1000;
   const deadlineUTC    = new Date(`${challenge.deadlineDate}T23:59:59Z`).getTime() + CST_OFFSET_MS;
-  const votingOpenUTC  = deadlineUTC  + CONFIG.votingDelayHours    * 60 * 60 * 1000;
+  const votingOpenUTC  = deadlineUTC   + CONFIG.votingDelayHours    * 60 * 60 * 1000;
   const votingCloseUTC = votingOpenUTC + CONFIG.votingDurationHours * 60 * 60 * 1000;
   return { deadlineUTC, votingOpenUTC, votingCloseUTC };
 }
@@ -378,13 +351,11 @@ function renderChallengeBanner() {
     </div>
   `;
 
-  // Populate hidden form fields
   const idField   = document.getElementById('challengeId');
   const nameField = document.getElementById('challengeNameField');
   if (idField)   idField.value   = c.id;
   if (nameField) nameField.value = c.title;
 
-  // Show mimic field
   const mimicField = document.getElementById('mimicField');
   if (mimicField) mimicField.classList.toggle('visible', c.type === 'mimic');
 }
@@ -392,10 +363,6 @@ function renderChallengeBanner() {
 
 /* =============================================================================
    14. WINNER BANNER
-   — Checks Supabase for a result for the current challenge.
-   — If found, displays the winner section on the main page.
-   — If there's a tie, winner was already randomly resolved at vote-close time
-   — and stored in challenge_results.
 ============================================================================= */
 
 async function renderWinnerBanner() {
@@ -430,11 +397,8 @@ async function renderWinnerBanner() {
     `;
     container.classList.add('active');
 
-    // Re-run scroll reveal on the new element
     const newReveal = container.querySelector('.reveal');
-    if (newReveal) {
-      setTimeout(() => newReveal.classList.add('visible'), 100);
-    }
+    if (newReveal) setTimeout(() => newReveal.classList.add('visible'), 100);
   } catch (e) {
     // No result yet — silently do nothing
   }
@@ -487,7 +451,6 @@ function renderPlaylistEmbeds() {
 
 /* =============================================================================
    17. CHALLENGE FORM
-   — Locks automatically when phase is not "open"
 ============================================================================= */
 
 function initChallengeForm() {
@@ -507,7 +470,6 @@ function initChallengeForm() {
   form.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(e, 'challenge'); });
 }
 
-
 function lockForm(form, phase) {
   const messages = {
     pending: 'Submissions are now closed. Voting opens in 24 hours — check Discord for the link.',
@@ -517,19 +479,17 @@ function lockForm(form, phase) {
 
   const btn = form.querySelector('.submit-btn');
   if (btn) {
-    btn.disabled = true;
+    btn.disabled    = true;
     btn.textContent = phase === 'voting' ? 'Voting in Progress' : 'Submissions Closed';
   }
 
-  // Add a lock notice above the button
   const notice = document.createElement('div');
   notice.className = 'form-lock-notice';
   notice.innerHTML = messages[phase] || 'Submissions are currently closed.';
   btn?.parentElement.insertBefore(notice, btn);
 
-  // Disable all inputs
   form.querySelectorAll('input, select, textarea').forEach(el => {
-    el.disabled = true;
+    el.disabled      = true;
     el.style.opacity = '0.5';
   });
 }
@@ -577,7 +537,7 @@ function applyFile(file, input, zone, feedback) {
                 file.type === 'audio/x-wav';
 
   if (!isWav) {
-    input.value = '';
+    input.value          = '';
     zone.classList.remove('has-file');
     zone.classList.add('has-error');
     feedback.className   = 'file-selected error';
@@ -587,7 +547,7 @@ function applyFile(file, input, zone, feedback) {
 
   const sizeMB = (file.size / 1024 / 1024).toFixed(1);
   if (file.size > 100 * 1024 * 1024) {
-    input.value = '';
+    input.value          = '';
     zone.classList.remove('has-file');
     zone.classList.add('has-error');
     feedback.className   = 'file-selected error';
@@ -636,15 +596,14 @@ async function handleFormSubmit(e, type) {
     data.track_filesize = file.size;
   }
 
-  // Lock the button and show uploading state
+  // Lock button while working
   btn.disabled    = true;
   btn.textContent = file ? 'Uploading track…' : 'Submitting…';
 
-  // Upload WAV to Supabase Storage if we have a file
+  // Upload WAV to Supabase Storage
   if (file) {
     try {
       const folderId = data.challenge_id || data.playlist_id || type;
-      // Sanitise filename — remove spaces and special chars
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const path     = `${type}/${folderId}/${Date.now()}_${safeName}`;
 
@@ -662,21 +621,18 @@ async function handleFormSubmit(e, type) {
       );
 
       if (uploadRes.ok) {
-        // Public streaming URL — works because bucket is set to Public
         data.audio_url = `${CONFIG.supabaseUrl}/storage/v1/object/public/submissions/${path}`;
       } else {
-        // Upload failed but we still save the metadata — don't block the submission
         console.warn('WAV upload failed:', await uploadRes.text());
       }
     } catch (uploadErr) {
-      // Network error on upload — still save metadata, just without audio_url
       console.warn('WAV upload error:', uploadErr);
     }
 
     btn.textContent = 'Saving submission…';
   }
 
-  // Save submission record to Supabase (with audio_url if upload succeeded)
+  // Save submission record to Supabase
   await saveSubmission(type, data);
 
   if (CONFIG.formEndpoint) {
@@ -698,7 +654,7 @@ function validateForm(form, type) {
   const title = form.querySelector(`#${titleId}`);
   const file  = form.querySelector(`#${fileId}`);
 
-  if (name  && !name.value.trim())
+  if (name && !name.value.trim())
     errors.push({ fieldId: nameId,  message: 'Please enter your artist name.' });
   if (email && (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)))
     errors.push({ fieldId: emailId, message: 'Please enter a valid email address.' });
@@ -707,9 +663,9 @@ function validateForm(form, type) {
   if (!file?.files?.length) {
     errors.push({ fieldId: fileId, message: 'Please upload your .wav file.' });
   } else {
-    const f = file.files[0];
-    const isWav = f.name.toLowerCase().endsWith('.wav') || f.type === 'audio/wav' || f.type === 'audio/x-wav';
-    if (!isWav) errors.push({ fieldId: fileId, message: 'Only .wav files are accepted.' });
+    const f      = file.files[0];
+    const isWav  = f.name.toLowerCase().endsWith('.wav') || f.type === 'audio/wav' || f.type === 'audio/x-wav';
+    if (!isWav)                   errors.push({ fieldId: fileId, message: 'Only .wav files are accepted.' });
     if (f.size > 100 * 1024 * 1024) errors.push({ fieldId: fileId, message: 'File must be under 100MB.' });
   }
   return errors;
@@ -720,9 +676,9 @@ function showFieldError(fieldId, message) {
   if (!field) return;
   field.style.borderColor = '#e05a5a';
   const err = document.createElement('span');
-  err.className = 'field-error';
+  err.className     = 'field-error';
   err.style.cssText = 'color:#e05a5a; font-size:0.75rem; margin-top:0.2rem; display:block;';
-  err.textContent = message;
+  err.textContent   = message;
   field.parentElement.appendChild(err);
 }
 
@@ -733,7 +689,7 @@ function clearErrors(form) {
 
 async function submitToFormspree(form, btn, data, type) {
   btn.textContent = 'Sending...';
-  btn.disabled = true;
+  btn.disabled    = true;
   try {
     const res = await fetch(CONFIG.formEndpoint, {
       method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' },
@@ -745,7 +701,7 @@ async function submitToFormspree(form, btn, data, type) {
 }
 
 function setSubmitSuccess(btn, form, type) {
-  const msg = type === 'challenge' ? '✓ Beat submitted! Watch Discord for updates.' : '✓ Track submitted! We\'ll be in touch.';
+  const msg            = type === 'challenge' ? '✓ Beat submitted! Watch Discord for updates.' : '✓ Track submitted! We\'ll be in touch.';
   btn.textContent      = msg;
   btn.style.background = 'linear-gradient(135deg, #2a6030, #1a4020)';
   btn.disabled         = true;
@@ -770,34 +726,50 @@ function setSubmitError(btn) {
 
 /* =============================================================================
    19. SUPABASE HELPERS + SUBMISSIONS
+   — KEY FIX: supabaseFetch never sends undefined as a header value.
+   — The Prefer header is only added conditionally for POST requests.
 ============================================================================= */
 
 function supabaseFetch(path, options = {}) {
-  return fetch(`${CONFIG.supabaseUrl}/rest/v1/${path}`, {
+  const headers = {
+    'Content-Type':  'application/json',
+    'apikey':        CONFIG.supabaseKey,
+    'Authorization': 'Bearer ' + CONFIG.supabaseKey,
+  };
+
+  // Merge any extra headers passed in (e.g. Prefer for PATCH)
+  if (options.headers) {
+    Object.assign(headers, options.headers);
+  }
+
+  // Only set Prefer: return=minimal on POST if not already overridden
+  if (options.method === 'POST' && !headers['Prefer']) {
+    headers['Prefer'] = 'return=minimal';
+  }
+
+  return fetch(CONFIG.supabaseUrl + '/rest/v1/' + path, {
     ...options,
-    headers: {
-      'Content-Type':  'application/json',
-      'apikey':        CONFIG.supabaseKey,
-      'Authorization': `Bearer ${CONFIG.supabaseKey}`,
-      'Prefer':        options.method === 'POST' ? 'return=minimal' : undefined,
-      ...(options.headers || {}),
-    },
+    headers,
   });
 }
 
 async function saveSubmission(type, data) {
   const table = type === 'challenge' ? 'challenge_submissions' : 'playlist_submissions';
   try {
-    await supabaseFetch(`${table}`, {
+    const res = await supabaseFetch(table, {
       method: 'POST',
       body:   JSON.stringify(data),
     });
+    if (!res.ok) {
+      const err = await res.json();
+      console.error('Supabase insert error:', err);
+    }
   } catch (e) {
     console.error('Submission save failed:', e);
   }
 }
 
-// Legacy localStorage API still available in console for debugging
+// Legacy localStorage helpers (still available in console for debugging)
 const DB_KEY = 'ltv_submissions';
 function getDB() {
   try { return JSON.parse(localStorage.getItem(DB_KEY)) || { challenge: {}, playlist: {} }; }
@@ -808,7 +780,7 @@ function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
 window.LTV = {
   async getSubmissions(type) {
     const table = type === 'challenge' ? 'challenge_submissions' : 'playlist_submissions';
-    const res   = await supabaseFetch(`${table}?order=submitted_at.desc`, { method: 'GET' });
+    const res   = await supabaseFetch(table + '?order=submitted_at.desc', { method: 'GET' });
     const data  = await res.json();
     console.table(data);
     return data;
@@ -819,7 +791,8 @@ window.LTV = {
     const blob = new Blob([json], { type: 'application/json' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
-    a.href = url; a.download = `ltv-submissions-${new Date().toISOString().slice(0,10)}.json`;
+    a.href     = url;
+    a.download = 'ltv-submissions-' + new Date().toISOString().slice(0,10) + '.json';
     a.click();
   },
 };
@@ -827,8 +800,6 @@ window.LTV = {
 
 /* =============================================================================
    20. ADMIN PANEL
-   — ?admin=1 in URL
-   — Added: winner SC URL field so you can add a SoundCloud link after announcing
 ============================================================================= */
 
 const ADMIN_CHALLENGE_KEY = 'ltv_admin_challenge';
@@ -847,7 +818,7 @@ function getChallenge() { return CURRENT_CHALLENGE; }
 function getPlaylist()  { return CURRENT_PLAYLIST; }
 
 function initAdminPanel() {
-  const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
+  const isAdmin  = new URLSearchParams(window.location.search).get('admin') === '1';
   if (!isAdmin) return;
 
   const fab      = document.getElementById('adminFab');
@@ -857,7 +828,7 @@ function initAdminPanel() {
   if (fab) fab.classList.add('visible');
   setAdminFields();
 
-  fab?.addEventListener('click',    () => overlay?.classList.add('open'));
+  fab?.addEventListener('click',     () => overlay?.classList.add('open'));
   closeBtn?.addEventListener('click', () => overlay?.classList.remove('open'));
   overlay?.addEventListener('click',  e => { if (e.target === overlay) overlay.classList.remove('open'); });
 
@@ -866,7 +837,7 @@ function initAdminPanel() {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
-      document.getElementById(`adminPanel${capitalize(tab.dataset.panel)}`)?.classList.add('active');
+      document.getElementById('adminPanel' + capitalize(tab.dataset.panel))?.classList.add('active');
     });
   });
 
@@ -899,18 +870,17 @@ function initAdminPanel() {
     flashSaved('savePlaylist');
   });
 
-  // Winner SC URL — update an existing result record
   document.getElementById('saveWinnerSC')?.addEventListener('click', async () => {
     const url = document.getElementById('adminWinnerSC')?.value.trim();
     if (!url) return;
     const c = getChallenge();
     try {
       await supabaseFetch(
-        `challenge_results?challenge_id=eq.${encodeURIComponent(c.id)}`,
+        'challenge_results?challenge_id=eq.' + encodeURIComponent(c.id),
         {
-          method: 'PATCH',
+          method:  'PATCH',
           headers: { 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ winner_sc_url: url }),
+          body:    JSON.stringify({ winner_sc_url: url }),
         }
       );
       flashSaved('saveWinnerSC');
@@ -925,21 +895,21 @@ function setAdminFields() {
   const c = getChallenge();
   const p = getPlaylist();
   const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
-  setVal('adminChallengeTitle',        c.title);
-  setVal('adminChallengeDesc',         c.desc);
-  setVal('adminChallengeDeadline',     c.deadline);
-  setVal('adminDeadlineDate',          c.deadlineDate);
-  setVal('adminChallengeType',         c.type);
-  setVal('adminPlaylistTitle',         p.title);
-  setVal('adminPlaylistDesc',          p.desc);
-  setVal('adminPlaylistDeadline',      p.deadline);
-  setVal('adminPlaylistDeadlineDate',  p.deadlineDate);
+  setVal('adminChallengeTitle',       c.title);
+  setVal('adminChallengeDesc',        c.desc);
+  setVal('adminChallengeDeadline',    c.deadline);
+  setVal('adminDeadlineDate',         c.deadlineDate);
+  setVal('adminChallengeType',        c.type);
+  setVal('adminPlaylistTitle',        p.title);
+  setVal('adminPlaylistDesc',         p.desc);
+  setVal('adminPlaylistDeadline',     p.deadline);
+  setVal('adminPlaylistDeadlineDate', p.deadlineDate);
 }
 
 function flashSaved(btnId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
-  const orig = btn.textContent;
+  const orig           = btn.textContent;
   btn.textContent      = '✓ Saved!';
   btn.style.background = 'linear-gradient(135deg, #2a6030, #1a4020)';
   setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
