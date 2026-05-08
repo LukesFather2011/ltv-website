@@ -41,7 +41,7 @@ const CONFIG = {
   supabaseKey:  'sb_publishable_uyXl-TEe2bM0mOstjywkwg__eTiuyCW',
   formEndpoint: '',
 
-  votingDelayHours:    24,
+  votingDelayHours:    8,
   votingDurationHours: 48,
 
   particleCount: 35,
@@ -73,6 +73,7 @@ const CURRENT_PLAYLIST = {
   desc:         'Our next community playlist is open for submissions. Producers must use at least 3 of 8 samples provided by Fossil Eater (check Discord)',
   deadline:     'April 30, 2026',
   deadlineDate: '2026-04-30',
+  closed:       true,
 };
 
 
@@ -413,21 +414,17 @@ function renderPlaylistBanner() {
   const banner = document.getElementById('playlistBanner');
   if (!banner) return;
   const p = getPlaylist();
-  banner.innerHTML = `
-    <span class="challenge-banner-tag">Now Accepting Submissions</span>
-    <div class="challenge-banner-title">${p.title}</div>
-    <div class="challenge-banner-desc">${p.desc}</div>
-    <div style="margin-top:0.8rem;">
-      <span class="challenge-deadline">Submission Deadline: ${p.deadline}</span>
-    </div>
-  `;
-  const sub = document.getElementById('playlistFormSub');
-  if (sub) sub.textContent = `Submit a track for ${p.title}. We'll pick the best fits and post the playlist on SoundCloud.`;
-  const idField   = document.getElementById('playlistId');
-  const nameField = document.getElementById('playlistNameField');
-  if (idField)   idField.value   = p.id;
-  if (nameField) nameField.value = p.title;
-}
+
+  if (p.closed) {
+    banner.innerHTML = `
+      <span class="challenge-banner-tag">Playlist Submissions</span>
+      <div class="challenge-banner-title">No Active Playlist</div>
+      <div class="challenge-banner-desc">We're not currently building a playlist. Keep an eye on Discord for the next one — we'll announce it there first.</div>
+    `;
+    const sub = document.getElementById('playlistFormSub');
+    if (sub) sub.textContent = 'Playlist submissions are currently closed.';
+    return;
+  }
 
 
 /* =============================================================================
@@ -503,7 +500,31 @@ function initPlaylistForm() {
   const form = document.getElementById('playlistForm');
   if (!form) return;
   initDropZone('playlistDropZone', 'plTrackFile', 'playlistFileSelected');
+
+  // Check manual closed flag
+  if (getPlaylist().closed) {
+    lockPlaylistForm(form);
+    return;
+  }
+
   form.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(e, 'playlist'); });
+}
+
+
+function lockPlaylistForm(form) {
+  const btn = form.querySelector('.submit-btn');
+  if (btn) {
+    btn.disabled    = true;
+    btn.textContent = 'No Active Playlist';
+  }
+  const notice = document.createElement('div');
+  notice.className = 'form-lock-notice';
+  notice.innerHTML = 'There is no playlist open for submissions right now. Check Discord for the next one.';
+  btn?.parentElement.insertBefore(notice, btn);
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    el.disabled      = true;
+    el.style.opacity = '0.5';
+  });
 }
 
 
