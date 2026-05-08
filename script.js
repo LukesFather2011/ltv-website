@@ -21,7 +21,7 @@
    15. Playlist Banner     — Renders current playlist info
    16. Playlist Embeds     — Renders SoundCloud embed iframes
    17. Challenge Form      — Validation + submission (locks when not in open phase)
-   18. Playlist Form       — Validation + submission
+   18. Playlist Form       — Validation + submission (locks when closed:true)
    19. Submissions DB      — Supabase-backed submission store
    20. Admin Panel         — ?admin=1 modal for updating content without code
 
@@ -41,7 +41,7 @@ const CONFIG = {
   supabaseKey:  'sb_publishable_uyXl-TEe2bM0mOstjywkwg__eTiuyCW',
   formEndpoint: '',
 
-  votingDelayHours:    8,
+  votingDelayHours:    24,
   votingDurationHours: 48,
 
   particleCount: 35,
@@ -51,6 +51,9 @@ const CONFIG = {
 
 /* =============================================================================
    2. CURRENT CHALLENGE
+   — UPDATE THIS each month. Change `id` every new challenge.
+   — deadlineDate: "YYYY-MM-DD" — submissions close at 11:59 PM CST automatically.
+   — type: "standard" | "mimic"
 ============================================================================= */
 
 const CURRENT_CHALLENGE = {
@@ -65,6 +68,9 @@ const CURRENT_CHALLENGE = {
 
 /* =============================================================================
    3. CURRENT PLAYLIST
+   — UPDATE THIS when starting a new playlist.
+   — Set closed: true when no playlist is active.
+   — Set closed: false (or remove it) when accepting submissions.
 ============================================================================= */
 
 const CURRENT_PLAYLIST = {
@@ -73,7 +79,7 @@ const CURRENT_PLAYLIST = {
   desc:         'Our next community playlist is open for submissions. Producers must use at least 3 of 8 samples provided by Fossil Eater (check Discord)',
   deadline:     'April 30, 2026',
   deadlineDate: '2026-04-30',
-  closed:       true,
+  closed:       true,   // ← set to false when you open the next playlist
 };
 
 
@@ -210,7 +216,7 @@ function initParticles() {
   if (!container) return;
   const colors = ['#d181a8', '#fcffde', '#60376b'];
   for (let i = 0; i < CONFIG.particleCount; i++) {
-    const p    = document.createElement('div');
+    const p     = document.createElement('div');
     p.className = 'particle';
     const size  = Math.random() * 3 + 1;
     p.style.cssText = `
@@ -235,9 +241,9 @@ function initWaveStrips() {
     const container = document.getElementById(id);
     if (!container) return;
     for (let i = 0; i < CONFIG.waveBarsCount; i++) {
-      const bar = document.createElement('div');
+      const bar     = document.createElement('div');
       bar.className = 'wbar';
-      const h = Math.random() * 34 + 5;
+      const h       = Math.random() * 34 + 5;
       bar.style.cssText = `
         --h: ${h}px;
         animation-delay: ${Math.random() * 1.2}s;
@@ -287,10 +293,10 @@ function getChallengePhase(challenge) {
   if (!challenge.deadlineDate) return 'open';
 
   const CST_OFFSET_MS  = 6 * 60 * 60 * 1000;
-  const deadlineUTC    = new Date(`${challenge.deadlineDate}T23:59:59Z`).getTime() + CST_OFFSET_MS;
+  const deadlineUTC    = new Date(challenge.deadlineDate + 'T23:59:59Z').getTime() + CST_OFFSET_MS;
   const votingOpenUTC  = deadlineUTC   + CONFIG.votingDelayHours    * 60 * 60 * 1000;
   const votingCloseUTC = votingOpenUTC + CONFIG.votingDurationHours * 60 * 60 * 1000;
-  const now = Date.now();
+  const now            = Date.now();
 
   if (now < deadlineUTC)    return 'open';
   if (now < votingOpenUTC)  return 'pending';
@@ -300,7 +306,7 @@ function getChallengePhase(challenge) {
 
 function getPhaseTimings(challenge) {
   const CST_OFFSET_MS  = 6 * 60 * 60 * 1000;
-  const deadlineUTC    = new Date(`${challenge.deadlineDate}T23:59:59Z`).getTime() + CST_OFFSET_MS;
+  const deadlineUTC    = new Date(challenge.deadlineDate + 'T23:59:59Z').getTime() + CST_OFFSET_MS;
   const votingOpenUTC  = deadlineUTC   + CONFIG.votingDelayHours    * 60 * 60 * 1000;
   const votingCloseUTC = votingOpenUTC + CONFIG.votingDurationHours * 60 * 60 * 1000;
   return { deadlineUTC, votingOpenUTC, votingCloseUTC };
@@ -374,7 +380,7 @@ async function renderWinnerBanner() {
 
   try {
     const res = await supabaseFetch(
-      `challenge_results?challenge_id=eq.${encodeURIComponent(c.id)}&limit=1`,
+      'challenge_results?challenge_id=eq.' + encodeURIComponent(c.id) + '&limit=1',
       { method: 'GET' }
     );
     const results = await res.json();
@@ -389,9 +395,7 @@ async function renderWinnerBanner() {
           <h2 class="winner-banner-name">${result.winner_name}</h2>
           <p class="winner-banner-track">"${result.winner_track}"</p>
           ${result.winner_sc_url
-            ? `<a href="${result.winner_sc_url}" target="_blank" rel="noopener" class="btn btn-discord winner-sc-btn">
-                 Listen on SoundCloud →
-               </a>`
+            ? '<a href="' + result.winner_sc_url + '" target="_blank" rel="noopener" class="btn btn-discord winner-sc-btn">Listen on SoundCloud →</a>'
             : ''}
         </div>
       </div>
@@ -408,23 +412,43 @@ async function renderWinnerBanner() {
 
 /* =============================================================================
    15. PLAYLIST BANNER
+   — Shows a "no active playlist" state when closed: true
 ============================================================================= */
 
 function renderPlaylistBanner() {
   const banner = document.getElementById('playlistBanner');
   if (!banner) return;
+
   const p = getPlaylist();
 
+  // Closed state — no active playlist
   if (p.closed) {
     banner.innerHTML = `
       <span class="challenge-banner-tag">Playlist Submissions</span>
-      <div class="challenge-banner-title">No Active Playlist</div>
-      <div class="challenge-banner-desc">We're not currently building a playlist. Keep an eye on Discord for the next one — we'll announce it there first.</div>
+      <div class="challenge-banner-title">No Active Playlist Right Now</div>
+      <div class="challenge-banner-desc">We're not currently building a playlist. Keep an eye on Discord — we'll announce the next one there first.</div>
     `;
     const sub = document.getElementById('playlistFormSub');
-    if (sub) sub.textContent = 'Playlist submissions are currently closed.';
+    if (sub) sub.textContent = 'Playlist submissions are currently closed. Check Discord for the next one.';
     return;
   }
+
+  // Active state
+  banner.innerHTML = `
+    <span class="challenge-banner-tag">Now Accepting Submissions</span>
+    <div class="challenge-banner-title">${p.title}</div>
+    <div class="challenge-banner-desc">${p.desc}</div>
+    <div style="margin-top:0.8rem;">
+      <span class="challenge-deadline">Submission Deadline: ${p.deadline}</span>
+    </div>
+  `;
+  const sub = document.getElementById('playlistFormSub');
+  if (sub) sub.textContent = 'Submit a track for ' + p.title + '. We\'ll pick the best fits and post the playlist on SoundCloud.';
+  const idField   = document.getElementById('playlistId');
+  const nameField = document.getElementById('playlistNameField');
+  if (idField)   idField.value   = p.id;
+  if (nameField) nameField.value = p.title;
+}
 
 
 /* =============================================================================
@@ -480,7 +504,7 @@ function lockForm(form, phase) {
     btn.textContent = phase === 'voting' ? 'Voting in Progress' : 'Submissions Closed';
   }
 
-  const notice = document.createElement('div');
+  const notice     = document.createElement('div');
   notice.className = 'form-lock-notice';
   notice.innerHTML = messages[phase] || 'Submissions are currently closed.';
   btn?.parentElement.insertBefore(notice, btn);
@@ -494,14 +518,16 @@ function lockForm(form, phase) {
 
 /* =============================================================================
    18. PLAYLIST FORM
+   — Locks when closed: true is set on CURRENT_PLAYLIST
 ============================================================================= */
 
 function initPlaylistForm() {
   const form = document.getElementById('playlistForm');
   if (!form) return;
+
   initDropZone('playlistDropZone', 'plTrackFile', 'playlistFileSelected');
 
-  // Check manual closed flag
+  // Lock if playlist is manually closed
   if (getPlaylist().closed) {
     lockPlaylistForm(form);
     return;
@@ -510,17 +536,18 @@ function initPlaylistForm() {
   form.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(e, 'playlist'); });
 }
 
-
 function lockPlaylistForm(form) {
   const btn = form.querySelector('.submit-btn');
   if (btn) {
     btn.disabled    = true;
     btn.textContent = 'No Active Playlist';
   }
-  const notice = document.createElement('div');
+
+  const notice     = document.createElement('div');
   notice.className = 'form-lock-notice';
   notice.innerHTML = 'There is no playlist open for submissions right now. Check Discord for the next one.';
   btn?.parentElement.insertBefore(notice, btn);
+
   form.querySelectorAll('input, select, textarea').forEach(el => {
     el.disabled      = true;
     el.style.opacity = '0.5';
@@ -562,7 +589,7 @@ function applyFile(file, input, zone, feedback) {
     zone.classList.remove('has-file');
     zone.classList.add('has-error');
     feedback.className   = 'file-selected error';
-    feedback.textContent = `"${file.name}" isn't a .wav file. Please export as WAV and try again.`;
+    feedback.textContent = '"' + file.name + '" isn\'t a .wav file. Please export as WAV and try again.';
     return;
   }
 
@@ -572,14 +599,14 @@ function applyFile(file, input, zone, feedback) {
     zone.classList.remove('has-file');
     zone.classList.add('has-error');
     feedback.className   = 'file-selected error';
-    feedback.textContent = `That file is ${sizeMB}MB — please keep WAVs under 100MB.`;
+    feedback.textContent = 'That file is ' + sizeMB + 'MB — please keep WAVs under 100MB.';
     return;
   }
 
   zone.classList.remove('has-error');
   zone.classList.add('has-file');
   feedback.className   = 'file-selected success';
-  feedback.textContent = `${file.name} (${sizeMB} MB) — ready to submit`;
+  feedback.textContent = file.name + ' (' + sizeMB + ' MB) — ready to submit';
 }
 
 
@@ -626,15 +653,15 @@ async function handleFormSubmit(e, type) {
     try {
       const folderId = data.challenge_id || data.playlist_id || type;
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const path     = `${type}/${folderId}/${Date.now()}_${safeName}`;
+      const path     = type + '/' + folderId + '/' + Date.now() + '_' + safeName;
 
       const uploadRes = await fetch(
-        `${CONFIG.supabaseUrl}/storage/v1/object/submissions/${path}`,
+        CONFIG.supabaseUrl + '/storage/v1/object/submissions/' + path,
         {
           method:  'POST',
           headers: {
             'apikey':        CONFIG.supabaseKey,
-            'Authorization': `Bearer ${CONFIG.supabaseKey}`,
+            'Authorization': 'Bearer ' + CONFIG.supabaseKey,
             'Content-Type':  'audio/wav',
           },
           body: file,
@@ -642,7 +669,7 @@ async function handleFormSubmit(e, type) {
       );
 
       if (uploadRes.ok) {
-        data.audio_url = `${CONFIG.supabaseUrl}/storage/v1/object/public/submissions/${path}`;
+        data.audio_url = CONFIG.supabaseUrl + '/storage/v1/object/public/submissions/' + path;
       } else {
         console.warn('WAV upload failed:', await uploadRes.text());
       }
@@ -670,10 +697,10 @@ function validateForm(form, type) {
   const titleId = type === 'playlist' ? 'plTrackTitle'  : 'trackTitle';
   const fileId  = type === 'playlist' ? 'plTrackFile'   : 'trackFile';
 
-  const name  = form.querySelector(`#${nameId}`);
-  const email = form.querySelector(`#${emailId}`);
-  const title = form.querySelector(`#${titleId}`);
-  const file  = form.querySelector(`#${fileId}`);
+  const name  = form.querySelector('#' + nameId);
+  const email = form.querySelector('#' + emailId);
+  const title = form.querySelector('#' + titleId);
+  const file  = form.querySelector('#' + fileId);
 
   if (name && !name.value.trim())
     errors.push({ fieldId: nameId,  message: 'Please enter your artist name.' });
@@ -684,9 +711,9 @@ function validateForm(form, type) {
   if (!file?.files?.length) {
     errors.push({ fieldId: fileId, message: 'Please upload your .wav file.' });
   } else {
-    const f      = file.files[0];
-    const isWav  = f.name.toLowerCase().endsWith('.wav') || f.type === 'audio/wav' || f.type === 'audio/x-wav';
-    if (!isWav)                   errors.push({ fieldId: fileId, message: 'Only .wav files are accepted.' });
+    const f     = file.files[0];
+    const isWav = f.name.toLowerCase().endsWith('.wav') || f.type === 'audio/wav' || f.type === 'audio/x-wav';
+    if (!isWav)                      errors.push({ fieldId: fileId, message: 'Only .wav files are accepted.' });
     if (f.size > 100 * 1024 * 1024) errors.push({ fieldId: fileId, message: 'File must be under 100MB.' });
   }
   return errors;
@@ -696,7 +723,7 @@ function showFieldError(fieldId, message) {
   const field = document.getElementById(fieldId);
   if (!field) return;
   field.style.borderColor = '#e05a5a';
-  const err = document.createElement('span');
+  const err         = document.createElement('span');
   err.className     = 'field-error';
   err.style.cssText = 'color:#e05a5a; font-size:0.75rem; margin-top:0.2rem; display:block;';
   err.textContent   = message;
@@ -747,8 +774,6 @@ function setSubmitError(btn) {
 
 /* =============================================================================
    19. SUPABASE HELPERS + SUBMISSIONS
-   — KEY FIX: supabaseFetch never sends undefined as a header value.
-   — The Prefer header is only added conditionally for POST requests.
 ============================================================================= */
 
 function supabaseFetch(path, options = {}) {
@@ -763,7 +788,7 @@ function supabaseFetch(path, options = {}) {
     Object.assign(headers, options.headers);
   }
 
-  // Only set Prefer: return=minimal on POST if not already overridden
+  // Only set Prefer: return=minimal on POST if not already set
   if (options.method === 'POST' && !headers['Prefer']) {
     headers['Prefer'] = 'return=minimal';
   }
@@ -790,7 +815,7 @@ async function saveSubmission(type, data) {
   }
 }
 
-// Legacy localStorage helpers (still available in console for debugging)
+// Legacy localStorage helpers (available in console for debugging)
 const DB_KEY = 'ltv_submissions';
 function getDB() {
   try { return JSON.parse(localStorage.getItem(DB_KEY)) || { challenge: {}, playlist: {} }; }
@@ -813,7 +838,7 @@ window.LTV = {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
-    a.download = 'ltv-submissions-' + new Date().toISOString().slice(0,10) + '.json';
+    a.download = 'ltv-submissions-' + new Date().toISOString().slice(0, 10) + '.json';
     a.click();
   },
 };
@@ -884,6 +909,7 @@ function initAdminPanel() {
       desc:         document.getElementById('adminPlaylistDesc')?.value.trim()     || CURRENT_PLAYLIST.desc,
       deadline:     document.getElementById('adminPlaylistDeadline')?.value.trim() || CURRENT_PLAYLIST.deadline,
       deadlineDate: document.getElementById('adminPlaylistDeadlineDate')?.value    || CURRENT_PLAYLIST.deadlineDate,
+      closed:       document.getElementById('adminPlaylistClosed')?.checked        || false,
     };
     localStorage.setItem(ADMIN_PLAYLIST_KEY, JSON.stringify(override));
     Object.assign(CURRENT_PLAYLIST, override);
@@ -916,6 +942,7 @@ function setAdminFields() {
   const c = getChallenge();
   const p = getPlaylist();
   const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
   setVal('adminChallengeTitle',       c.title);
   setVal('adminChallengeDesc',        c.desc);
   setVal('adminChallengeDeadline',    c.deadline);
@@ -925,6 +952,7 @@ function setAdminFields() {
   setVal('adminPlaylistDesc',         p.desc);
   setVal('adminPlaylistDeadline',     p.deadline);
   setVal('adminPlaylistDeadlineDate', p.deadlineDate);
+  setChk('adminPlaylistClosed',       p.closed);
 }
 
 function flashSaved(btnId) {

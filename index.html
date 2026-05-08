@@ -388,6 +388,12 @@
         <div class="field"><label for="adminPlaylistDesc">Description / Theme</label><textarea id="adminPlaylistDesc" placeholder="e.g. Anything that sounds like driving alone at 2am..."></textarea></div>
         <div class="field"><label for="adminPlaylistDeadline">Submission Deadline (display text)</label><input id="adminPlaylistDeadline" type="text" placeholder="e.g. June 15, 2026"></div>
         <div class="field"><label for="adminPlaylistDeadlineDate">Deadline Date (for auto-locking)</label><input id="adminPlaylistDeadlineDate" type="date" placeholder="YYYY-MM-DD"></div>
+        <div class="field" style="flex-direction:row; align-items:center; gap:0.7rem;">
+          <input id="adminPlaylistClosed" type="checkbox" style="width:auto; accent-color:var(--accent);">
+          <label for="adminPlaylistClosed" style="text-transform:none; font-size:0.85rem; letter-spacing:0; color:var(--text-muted); cursor:pointer;">
+            No active playlist — hide submission form
+          </label>
+        </div>
         <button class="admin-save-btn" id="savePlaylist">Save Playlist</button>
       </div>
 
