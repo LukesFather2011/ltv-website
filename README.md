@@ -1,6 +1,6 @@
 # Limitless TrueVibe — Website
 
-A community website for electronic music producers. Built with plain HTML, CSS, and JavaScript — no frameworks, no build tools, no dependencies. Open the folder and go.
+A community website for electronic music producers. Built with plain HTML, CSS, and JavaScript — no frameworks, no build tools, no dependencies.
 
 ---
 
@@ -8,110 +8,158 @@ A community website for electronic music producers. Built with plain HTML, CSS, 
 
 ```
 ltv-website/
-├── index.html          ← Main site — all page sections
-├── styles.css          ← Main site styles (organized with table of contents)
-├── script.js           ← Main site interactivity, phase engine, dynamic content
-├── voting.html         ← Standalone voting page (separate URL)
-├── voting.js           ← All voting page logic
-├── voting.css          ← Voting page styles + winner banner styles
+├── index.html          ← Main site
+├── styles.css          ← Main site styles
+├── script.js           ← All interactivity and dynamic content
+├── halloffame.html     ← Hall of Fame — all past challenge winners
+├── halloffame.css      ← Hall of Fame styles + admin toggle styles
 ├── assets/
 │   └── images/
-│       ├── logo-hero.jpg    ← Purple mountain logo (hero + about sections)
-│       └── logo-no-bg.png   ← Dark background logo (nav + footer)
-└── README.md           ← This file
+│       ├── logo-hero.jpg     ← Purple mountain logo (hero + about)
+│       └── logo-no-bg.png    ← Dark background logo (nav + footer)
+└── README.md
 ```
 
 ---
 
-## Getting Started
+## Hosting — Cloudflare Pages
 
-### View locally
-Open `index.html` in any browser. No server or install needed.
+The site is deployed via **Cloudflare Pages** connected to a GitHub repository.
 
-### Deploy to the web
-This site works with any static host. Recommended free options:
+### First-time setup
+1. Push the project to a public GitHub repository
+2. Log into [Cloudflare Dashboard](https://dash.cloudflare.com)
+3. Go to **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
+4. Select your GitHub repo
+5. Build settings — leave everything blank (this is a static site, no build needed)
+6. Click **Save and Deploy**
 
-| Host | How to deploy |
-|---|---|
-| **Netlify** | Drag the project folder onto [netlify.com/drop](https://netlify.com/drop) |
-| **GitHub Pages** | Push to a GitHub repo → Settings → Pages → Deploy from branch |
-| **Vercel** | Import repo at [vercel.com](https://vercel.com), zero config needed |
+### Custom domain (limitlesstruevibe.com)
+1. In Cloudflare Dashboard → your Pages project → **Custom domains**
+2. Click **Set up a custom domain**
+3. Enter `limitlesstruevibe.com`
+4. Cloudflare handles SSL automatically — no extra setup needed
+5. If your domain is registered on Namecheap, point its nameservers to Cloudflare's (found in Cloudflare DNS settings)
 
----
-
-## How the Challenge Lifecycle Works
-
-The site fully automates the monthly beat challenge cycle. Once you set a deadline date, everything switches phases on its own — no action needed from you.
-
-```
-Submissions Open
-      ↓  (deadline hits at 11:59 PM CST)
-Submissions Closed — Voting Pending
-      ↓  (24 hours later)
-Voting Open  ←── voting.html goes live, nav link appears
-      ↓  (48 hours later)
-Voting Closed — Winner Calculated Automatically
-      ↓
-Winner Banner appears on homepage
-      ↓  (you add their SoundCloud link via Admin Panel)
-Hall of Fame updated on voting page
-```
-
-**Tie-breaking:** If two or more tracks share the top average rating, the winner is chosen randomly and silently from the tied entries. You'll see the result in the admin panel.
+### Deploying updates
+Every push to your GitHub repo's main branch automatically redeploys the site. No manual steps needed.
 
 ---
 
-## Updating the Current Beat Challenge
+## How the Site Works
 
-Open `script.js` and find `CURRENT_CHALLENGE` near the top. Update all fields when starting a new challenge:
+The site is intentionally simple. No database. No backend. No automatic anything.
+
+**You control everything manually through:**
+1. Editing values in `script.js` (permanent changes)
+2. Using the Admin Panel at `?admin=1` (temporary, browser-local changes)
+
+### The basic monthly workflow
+
+```
+1. Start a new challenge → update CURRENT_CHALLENGE in script.js
+2. Create a Google Form for submissions → paste URL in admin panel or script.js
+3. Toggle submissions ON in admin panel
+4. Challenge ends → toggle submissions OFF
+5. Create a voting Google Form → paste URL, toggle voting ON
+6. Voting ends → toggle voting OFF, announce winner in Discord
+7. Add winner to halloffame.html
+8. Repeat next month
+```
+
+---
+
+## Updating the Current Challenge
+
+Open `script.js` and find `CURRENT_CHALLENGE` near the top:
 
 ```js
 const CURRENT_CHALLENGE = {
-  id:           'your-challenge-slug-2026-06',  // ← Change every month, unique slug
-  title:        'Challenge Name',
-  desc:         'What producers need to make...',
-  deadline:     'June 30, 2026',                // ← Display text shown on site
-  deadlineDate: '2026-06-30',                   // ← ISO date used for auto phase-switching
-  type:         'standard',                     // 'standard' or 'mimic'
+  title:           'Doppelganger',
+  desc:            'Create a track in the style of any artist...',
+  deadline:        'May 31, 2026',
+  type:            'mimic',     // 'standard' or 'mimic'
+  submissionsOpen: true,        // ← controls whether the submit button shows
+  votingOpen:      false,       // ← controls whether the voting button shows
 };
 ```
 
-**`id`** — change this every single month. It's the key used to group submissions and votes in the database. If you reuse an id, the new challenge will mix with the old one's data.
-
-**`deadlineDate`** — this is what drives the entire automated lifecycle. Format is `YYYY-MM-DD`. The system closes submissions at exactly 11:59 PM CST on this date, opens voting 24 hours later, and closes voting 48 hours after that.
-
 **`type` options:**
-- `'standard'` — regular beat challenge, no extra fields
-- `'mimic'` — adds a "Who are you mimicking?" field (used for Doppelganger-style challenges)
+- `'standard'` — regular beat challenge
+- `'mimic'` — adds a note on the card reminding submitters to name who they're mimicking
+
+**Toggle logic:**
+- `submissionsOpen: true` + `votingOpen: false` → Submit button shows
+- `submissionsOpen: false` + `votingOpen: true` → Vote button shows
+- Both `false` → "Submissions Closed" message shows
 
 ---
 
 ## Updating the Current Playlist
 
-Open `script.js` and find `CURRENT_PLAYLIST`:
-
 ```js
 const CURRENT_PLAYLIST = {
-  id:           'ltv-vol-5-2026',    // ← Change with each new playlist
-  title:        'LTV Vol. 5',
-  desc:         'Theme or description...',
-  deadline:     'June 15, 2026',
-  deadlineDate: '2026-06-15',        // ← Used for auto-locking the playlist form
+  title:           'LTV Vol. 5',
+  desc:            'Theme or description...',
+  deadline:        'June 15, 2026',
+  submissionsOpen: true,   // ← flip to false when not accepting submissions
 };
 ```
+
+Set `submissionsOpen: false` when no playlist is active. The banner automatically shows "No Active Playlist Right Now."
+
+---
+
+## Google Form URLs
+
+Paste your Google Form URLs into the `FORMS` object in `script.js`:
+
+```js
+const FORMS = {
+  challengeSubmit: 'https://forms.google.com/your-challenge-form',
+  voting:          'https://forms.google.com/your-voting-form',
+  playlistSubmit:  'https://forms.google.com/your-playlist-form',
+};
+```
+
+The site only shows a button for a form if:
+1. The corresponding toggle (`submissionsOpen` or `votingOpen`) is `true`
+2. A real URL is set in `FORMS` (not a placeholder)
+
+If the toggle is on but no URL is set, the card shows a message directing people to Discord instead.
+
+---
+
+## Admin Panel
+
+Add `?admin=1` to your site URL (e.g. `limitlesstruevibe.com/?admin=1`) to open the admin panel. A **⚙ Manage Content** button appears in the bottom-right corner.
+
+### Challenge tab
+- Edit challenge name, description, deadline, type
+- Toggle **Submissions Open** on/off
+- Toggle **Voting Active** on/off
+
+### Playlist tab
+- Edit playlist name, description, deadline
+- Toggle **Submissions Open** on/off
+
+### Links tab
+- Paste Google Form URLs for challenge submissions, voting, and playlist submissions
+
+**Important:** Admin panel changes save to your browser only. They apply immediately but are local to your device. To make changes permanent for everyone, copy the values back into `script.js` and push to GitHub.
 
 ---
 
 ## Adding a New Playlist Embed
 
-When a playlist is finished and posted to SoundCloud, add it to the `PLAYLISTS` array in `script.js` (most recent first):
+When a playlist is posted on SoundCloud, add it to the `PLAYLISTS` array in `script.js`:
 
-**Step 1** — Get the embed URL from SoundCloud:
+**Step 1** — Get the embed URL:
 1. Go to your SoundCloud playlist
 2. Click **Share** → **Embed**
 3. Copy the URL from the `src` attribute of the iframe
 
-**Step 2** — Add it to the array:
+**Step 2** — Add it (most recent first):
 
 ```js
 const PLAYLISTS = [
@@ -119,275 +167,93 @@ const PLAYLISTS = [
     id:       'ltv-vol-5',
     title:    'LTV Vol. 5',
     subtitle: 'Community Mix',
-    embedUrl: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/YOUR_ID...',
+    embedUrl: 'https://w.soundcloud.com/player/?url=...',
   },
-  // ... older playlists below
+  // older playlists below
 ];
 ```
 
 ---
 
-## Admin Panel
+## Hall of Fame
 
-Add `?admin=1` to your site URL (e.g. `yoursite.com/?admin=1`) to open the admin panel. A **⚙ Manage Content** button appears in the bottom-right corner.
+The Hall of Fame (`halloffame.html`) is hardcoded — no database. When a new winner is announced, add a card manually.
 
-The admin panel has three tabs:
+### Adding a new winner
 
-**Beat Challenge tab**
-- Update challenge name, description, display deadline, auto-lock date, and type
-- Changes save to your browser and apply immediately
+Open `halloffame.html` and add a new card at the **top** of the `.hof-grid` div (newest first). Copy the pattern from an existing card:
 
-**Playlist tab**
-- Update playlist name, description, display deadline, and auto-lock date
-
-**Winner tab**
-- After announcing the winner in Discord, paste their SoundCloud profile URL here
-- The winner banner on the homepage will update to include the link
-
-> **To make changes permanent** (so they apply for everyone, not just your browser): copy the updated values back into `CURRENT_CHALLENGE` or `CURRENT_PLAYLIST` in `script.js` and redeploy.
-
----
-
-## The Voting Page (voting.html)
-
-The voting page is a separate URL (`/voting.html`) that handles the full voting experience.
-
-### What it does automatically
-- Shows the correct state based on the current challenge phase (not open yet / voting active / results)
-- Lists all submissions anonymously as "Producer 01", "Producer 02" etc. in randomised order to prevent position bias
-- Streams audio directly in the browser if `audio_url` is set on the submission
-- Enforces one vote per person using a browser fingerprint stored in Supabase
-- Calculates final rankings and resolves ties when voting closes
-- Displays the Hall of Fame (all past challenge winners) at the bottom
-
-### How voters find it
-When voting opens, a pulsing **🗳 Vote** link automatically appears in the nav on `index.html`. You also post the direct link in Discord.
-
-### What you do after voting closes
-Nothing — the winner is calculated automatically. Your only job is to go to `?admin=1` → Winner tab and add the winner's SoundCloud profile URL once you've made the Discord announcement.
-
----
-
-## Supabase Database
-
-All submissions, votes, and results are stored in Supabase (free tier). The database has four tables:
-
-| Table | What it stores |
-|---|---|
-| `challenge_submissions` | Every beat challenge submission |
-| `playlist_submissions` | Every playlist submission |
-| `votes` | Every vote cast, with ratings per track |
-| `challenge_results` | Final ranked results for each completed challenge |
-
-### Viewing submissions
-
-```js
-// In browser DevTools console on your site:
-LTV.getSubmissions('challenge')   // logs all challenge submissions
-LTV.getSubmissions('playlist')    // logs all playlist submissions
-LTV.exportSubmissions()           // downloads a JSON file
+```html
+<div class="hof-card reveal">
+  <div class="hof-card-num">#15</div>
+  <div class="hof-card-crown">👑</div>
+  <div class="hof-card-challenge">Challenge Name</div>
+  <div class="hof-card-winner">Artist Handle</div>
+  <div class="hof-card-track">"Track Title"</div>
+  <a href="https://soundcloud.com/artistname" target="_blank" rel="noopener" class="hof-sc-btn">SoundCloud →</a>
+  <div class="hof-card-date">Month Year</div>
+</div>
 ```
 
-You can also browse and export data directly in the Supabase dashboard → **Table Editor**.
+### Multi-win badges
 
-### Supabase config
+If the winner has won before, add the badge inside `.hof-card-winner`:
 
-Your credentials live at the top of `script.js`:
-
-```js
-const CONFIG = {
-  supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
-  supabaseKey: 'YOUR_ANON_KEY',
-  // ...
-};
+```html
+<div class="hof-card-winner">
+  Artist Handle <span class="hof-multi-badge">2x Winner</span>
+</div>
 ```
 
-### Timing config
+Update to `3x Winner`, `4x Winner` etc. as wins accumulate.
 
-Also in `CONFIG` at the top of `script.js`:
+### Update the stats bar
 
-```js
-votingDelayHours:    24,   // hours between submission deadline and voting opening
-votingDurationHours: 48,   // how long voting stays open
-```
+After adding a new card, update the stats at the top of `halloffame.html`:
 
-Change these if you want a different window in future cycles.
-
-### Full database setup (if starting from scratch)
-
-Run this SQL in the Supabase SQL Editor:
-
-```sql
--- Challenge submissions
-CREATE TABLE challenge_submissions (
-  id              SERIAL PRIMARY KEY,
-  challenge_id    TEXT,
-  challenge_name  TEXT,
-  artist_name     TEXT,
-  email           TEXT,
-  discord         TEXT,
-  track_title     TEXT,
-  genre           TEXT,
-  mimic_artist    TEXT,
-  notes           TEXT,
-  audio_url       TEXT,
-  track_filename  TEXT,
-  track_filesize  BIGINT,
-  submitted_at    TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Playlist submissions
-CREATE TABLE playlist_submissions (
-  id              SERIAL PRIMARY KEY,
-  playlist_id     TEXT,
-  playlist_name   TEXT,
-  artist_name     TEXT,
-  email           TEXT,
-  discord         TEXT,
-  track_title     TEXT,
-  genre           TEXT,
-  notes           TEXT,
-  audio_url       TEXT,
-  track_filename  TEXT,
-  track_filesize  BIGINT,
-  submitted_at    TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Votes
-CREATE TABLE votes (
-  id                SERIAL PRIMARY KEY,
-  challenge_id      TEXT NOT NULL,
-  ratings           JSONB NOT NULL,
-  voter_fingerprint TEXT NOT NULL,
-  submitted_at      TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Challenge results (auto-populated when voting closes)
-CREATE TABLE challenge_results (
-  id               SERIAL PRIMARY KEY,
-  challenge_id     TEXT NOT NULL UNIQUE,
-  challenge_title  TEXT,
-  winner_id        INTEGER,
-  winner_name      TEXT,
-  winner_track     TEXT,
-  winner_sc_url    TEXT,
-  final_rankings   JSONB,
-  decided_at       TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable Row Level Security on all tables
-ALTER TABLE challenge_submissions  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE playlist_submissions   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE votes                  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE challenge_results      ENABLE ROW LEVEL SECURITY;
-
--- Allow public read + insert on all tables
-CREATE POLICY "allow_insert" ON challenge_submissions  FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "allow_select" ON challenge_submissions  FOR SELECT TO anon USING (true);
-CREATE POLICY "allow_insert" ON playlist_submissions   FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "allow_select" ON playlist_submissions   FOR SELECT TO anon USING (true);
-CREATE POLICY "allow_insert" ON votes                  FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "allow_select" ON votes                  FOR SELECT TO anon USING (true);
-CREATE POLICY "allow_insert" ON challenge_results      FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "allow_select" ON challenge_results      FOR SELECT TO anon USING (true);
-CREATE POLICY "allow_update" ON challenge_results      FOR UPDATE TO anon USING (true);
-```
-
-If your tables already exist and you just need to add the `audio_url` column:
-
-```sql
-ALTER TABLE challenge_submissions ADD COLUMN IF NOT EXISTS audio_url TEXT;
-ALTER TABLE playlist_submissions  ADD COLUMN IF NOT EXISTS audio_url TEXT;
+```html
+<div class="hof-stats-bar">
+  <div class="hof-stat"><span class="hof-stat-num">15</span><span class="hof-stat-lbl">Challenges</span></div>
+  <div class="hof-stat"><span class="hof-stat-num">12</span><span class="hof-stat-lbl">Unique Winners</span></div>
+  <div class="hof-stat"><span class="hof-stat-num">3</span><span class="hof-stat-lbl">Multi-Time Champs</span></div>
+</div>
 ```
 
 ---
 
-## WAV File Uploads + Audio Streaming
+## Submissions — Google Forms Setup
 
-Both forms accept `.wav` files only (validated client-side, max 100MB). The file metadata (name, size) is saved with each submission record in Supabase.
+Both challenge and playlist submissions go through Google Forms. This keeps files organized in Google Drive automatically.
 
-For audio to stream on the voting page, the actual WAV file needs to be stored somewhere and its URL saved to the `audio_url` column on the submission. The recommended approach is Supabase Storage.
+### Recommended Google Form fields
 
-### Setting up Supabase Storage for WAV files
+**Challenge submission form:**
+- Artist Name / Handle (short answer)
+- Email (short answer)
+- Discord Username (short answer, optional)
+- Track Title (short answer)
+- Genre (dropdown)
+- Who are you mimicking? (short answer — only show for mimic challenges using conditional logic)
+- File Upload (WAV preferred — Google Drive handles large files with no size issues)
+- Anything else we should know? (paragraph, optional)
 
-1. In Supabase dashboard → **Storage** → create a new bucket called `submissions`
-2. Set the bucket to **Public** so files can be streamed without auth
-3. In `script.js`, inside `handleFormSubmit()`, add this block after `data.submitted_at` is set:
+**Playlist submission form:**
+- Artist Name / Handle
+- Email
+- Discord Username (optional)
+- Track Title
+- Genre (optional)
+- File Upload
+- Anything else we should know? (optional)
 
-```js
-const fileInputId = type === 'challenge' ? 'trackFile' : 'plTrackFile';
-const fileInput   = document.getElementById(fileInputId);
-const file        = fileInput?.files?.[0];
+**Voting form:**
+- Discord Username or Email (for identity)
+- One question per track with a 1–10 rating scale or ranking
 
-if (file) {
-  const path     = `${type}/${data.challenge_id || data.playlist_id}/${Date.now()}_${file.name}`;
-  const uploadRes = await fetch(
-    `${CONFIG.supabaseUrl}/storage/v1/object/submissions/${path}`,
-    {
-      method:  'POST',
-      headers: {
-        'apikey':        CONFIG.supabaseKey,
-        'Authorization': `Bearer ${CONFIG.supabaseKey}`,
-        'Content-Type':  'audio/wav',
-      },
-      body: file,
-    }
-  );
-  if (uploadRes.ok) {
-    data.audio_url = `${CONFIG.supabaseUrl}/storage/v1/object/public/submissions/${path}`;
-  }
-}
-```
-
-Files will be organised as: `submissions/challenge/challenge-id/timestamp_trackname.wav`
-
-The `audio_url` saved with the submission record is what the voting page uses to stream audio.
-
----
-
-## Backfilling Past Challenge Winners
-
-To add historical winners to the Hall of Fame on the voting page, insert rows directly into `challenge_results` in the Supabase SQL Editor:
-
-```sql
-INSERT INTO challenge_results
-  (challenge_id, challenge_title, winner_name, winner_track, winner_sc_url, final_rankings, decided_at)
-VALUES
-  (
-    'your-old-challenge-id',
-    'Challenge Name',
-    'Artist Handle',
-    'Track Title',
-    'https://soundcloud.com/artistname',  -- or NULL if no link
-    '[]',                                 -- empty array fine for backfills
-    '2026-03-18T00:00:00Z'               -- approximate date
-  );
-```
-
-Run one `INSERT` per past challenge. They'll appear in the Hall of Fame sorted by date, most recent first.
-
----
-
-## Hero Waveform
-
-The animated waveform behind the hero logo is drawn on an HTML5 canvas by `initHeroWave()` in `script.js`. To adjust it, find the `waves` array:
-
-```js
-const waves = [
-  { freq: 0.018, amp: 55, speed: 0.012, color: 'rgba(209,129,168,0.55)', width: 2 },
-  // ...
-];
-```
-
-- `freq` — how tightly packed the waves are (higher = more peaks)
-- `amp` — height of the wave
-- `speed` — animation speed
-- `color` — RGBA, keep alpha between 0.2–0.6
-
-Overall canvas opacity is in `styles.css`:
-```css
-.hero-wave-canvas { opacity: 0.18; }
-```
+### Accessing submissions
+All responses and uploaded files appear automatically in:
+- **Google Forms** → Responses tab (spreadsheet view)
+- **Google Drive** → a folder created automatically per form
 
 ---
 
@@ -397,61 +263,62 @@ Overall canvas opacity is in `styles.css`:
 |---|---|---|
 | Cream | `#fcffde` | Primary text |
 | Dark | `#161b31` | Main background |
-| Pink | `#d181a8` | Primary accent, CTAs, highlights |
+| Pink | `#d181a8` | Primary accent, CTAs |
 | Purple | `#60376b` | Secondary accent, gradients |
 | White | `#ffffff` | Pure white |
 | Discord | `#5865F2` | Discord brand buttons |
 
-All colors are CSS variables at the top of `styles.css`:
-
-```css
-:root {
-  --color-pink:   #d181a8;
-  --color-purple: #60376b;
-  /* ... */
-}
-```
+All colors are CSS variables at the top of `styles.css`. Change one and it updates everywhere.
 
 ---
 
 ## Page Sections
 
-| Section | HTML id / file | What drives the content |
+| Section | File | What drives the content |
 |---|---|---|
-| Navigation | `#navbar` | Static HTML; voting link auto-shows during voting phase |
-| Hero | `#hero` | Static HTML + canvas wave from `script.js` |
-| Winner Banner | `#winnerBanner` | Auto-populated by `renderWinnerBanner()` in `script.js` |
-| About | `#about` | Static HTML |
-| Stats | `#stats` | Static HTML (edit numbers directly) |
-| Beat Challenges | `#challenges` | Banner + form phase from `CURRENT_CHALLENGE` in `script.js` |
-| Playlists | `#playlists` | Embeds from `PLAYLISTS` array, banner from `CURRENT_PLAYLIST` |
-| Join | `#join` | Static HTML |
-| Footer | `#footer` | Static HTML |
-| Voting page | `voting.html` | Fully driven by `voting.js` + Supabase data |
-| Hall of Fame | `voting.html` | Auto-populated from `challenge_results` table |
+| Navigation | `index.html` | Static HTML + Hall of Fame link |
+| Hero | `index.html` | Static HTML + canvas wave |
+| About | `index.html` | Static HTML |
+| Stats | `index.html` | Static HTML (edit numbers directly) |
+| Beat Challenges | `index.html` | `CURRENT_CHALLENGE` in `script.js` |
+| Playlists | `index.html` | `PLAYLISTS` array + `CURRENT_PLAYLIST` in `script.js` |
+| Join | `index.html` | Static HTML |
+| Footer | `index.html` | Static HTML |
+| Hall of Fame | `halloffame.html` | Hardcoded cards — edit manually |
 
 ---
 
 ## Monthly Checklist
 
-When starting a new challenge cycle, here's all you need to do:
+### Starting a new challenge
+- [ ] Update `CURRENT_CHALLENGE` in `script.js` — new title, desc, deadline, type
+- [ ] Create a Google Form for submissions
+- [ ] Paste the URL into `FORMS.challengeSubmit` in `script.js` (or via admin panel)
+- [ ] Set `submissionsOpen: true`, `votingOpen: false`
+- [ ] Push to GitHub → auto-deploys to Cloudflare Pages
+- [ ] Announce in Discord
 
-- [ ] Update `CURRENT_CHALLENGE` in `script.js` — new `id`, `title`, `desc`, `deadline`, `deadlineDate`, `type`
-- [ ] Redeploy the site (or save admin panel changes as permanent in `script.js`)
-- [ ] Announce the new challenge in Discord
-- [ ] *(Everything else is automatic)*
+### When submissions close
+- [ ] Set `submissionsOpen: false` in `script.js` or admin panel
+- [ ] Download submissions from Google Drive
+- [ ] Create a voting Google Form
+- [ ] Paste voting URL into `FORMS.voting`
+- [ ] Set `votingOpen: true`
+- [ ] Push to GitHub
+- [ ] Post voting link in Discord
 
-When the cycle ends:
-
-- [ ] Wait for winner to be auto-calculated
-- [ ] Announce the winner in Discord
-- [ ] Go to `yoursite.com/?admin=1` → Winner tab → paste their SoundCloud URL → Save
+### When voting closes
+- [ ] Set `votingOpen: false`
+- [ ] Tally results from Google Forms response sheet
+- [ ] Announce winner in Discord
+- [ ] Add winner card to `halloffame.html`
+- [ ] Update stats bar numbers in `halloffame.html`
+- [ ] Push to GitHub
 
 ---
 
 ## Future Ideas
 
-- **Discord member count widget** — live embed showing current server size
-- **Newsletter / email list** — Mailchimp or similar integration
-- **Artist profiles** — simple pages for regular community members
-- **Playlist voting** — extend the voting system to community playlist curation
+- Playlists archive page (`playlists.html`) with cover art cards linking to SoundCloud
+- Discord member count widget
+- Newsletter / email list integration
