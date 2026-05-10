@@ -32,7 +32,7 @@
 const CURRENT_CHALLENGE = {
   title:           'Doppelganger',
   desc:            'Create a track in the style of any artist in the Discord. It could be their signature sound, their usual BPM, their go-to genre — just make us feel like it could have been them.',
-  deadline:        'May 31, 2026',
+  deadline:        'May 15, 2026',
   type:            'mimic',       // 'standard' or 'mimic'
   submissionsOpen: true,          // ← flip to false to hide the submission button
   votingOpen:      false,         // ← flip to true when voting is active
