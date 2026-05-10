@@ -46,7 +46,7 @@ const CURRENT_PLAYLIST = {
 };
 
 const FORMS = {
-  challengeSubmit: 'YOUR_CHALLENGE_SUBMISSION_GOOGLE_FORM_URL',   // ← paste your Google Form URL here
+  challengeSubmit: 'https://forms.gle/9oFPNXYuXviJzNcP7',   // ← paste your Google Form URL here
   voting:          'YOUR_VOTING_GOOGLE_FORM_URL',                  // ← paste your voting Google Form URL here
   playlistSubmit:  'YOUR_PLAYLIST_SUBMISSION_GOOGLE_FORM_URL',     // ← paste your Google Form URL here
 };
