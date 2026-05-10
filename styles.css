@@ -1935,3 +1935,47 @@ button {
 
 .file-selected.success::before { content: '✓'; }
 .file-selected.error::before   { content: '✕'; }
+
+
+/* =============================================================================
+   SUBMIT BUTTON — anchor tag fix
+   submit-btn is used on <a> tags linking to Google Forms
+============================================================================= */
+
+a.submit-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  line-height: 1.4;
+}
+
+a.submit-btn:hover {
+  color: white;
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(209, 129, 168, 0.45);
+}
+
+.form-lock-notice {
+  background: rgba(209,129,168,0.08);
+  border: 1px solid rgba(209,129,168,0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.8rem;
+}
+
+.challenge-status--voting {
+  background: rgba(88,101,242,0.12);
+  border-color: rgba(88,101,242,0.35);
+  color: #8b98f8;
+}
+
+.challenge-status--closed {
+  background: rgba(252,255,222,0.05);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
