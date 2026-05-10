@@ -594,12 +594,12 @@ function applyFile(file, input, zone, feedback) {
   }
 
   const sizeMB = (file.size / 1024 / 1024).toFixed(1);
-  if (file.size > 100 * 1024 * 1024) {
+  if (file.size > 1024 * 1024 * 1024) {
     input.value          = '';
     zone.classList.remove('has-file');
     zone.classList.add('has-error');
     feedback.className   = 'file-selected error';
-    feedback.textContent = 'That file is ' + sizeMB + 'MB — please keep WAVs under 100MB.';
+    feedback.textContent = 'That file is ' + sizeMB + 'MB — please keep WAVs under 1GB.';
     return;
   }
 
@@ -713,8 +713,8 @@ function validateForm(form, type) {
   } else {
     const f     = file.files[0];
     const isWav = f.name.toLowerCase().endsWith('.wav') || f.type === 'audio/wav' || f.type === 'audio/x-wav';
-    if (!isWav)                      errors.push({ fieldId: fileId, message: 'Only .wav files are accepted.' });
-    if (f.size > 100 * 1024 * 1024) errors.push({ fieldId: fileId, message: 'File must be under 100MB.' });
+    if (!isWav)                         errors.push({ fieldId: fileId, message: 'Only .wav files are accepted.' });
+    if (f.size > 1024 * 1024 * 1024)   errors.push({ fieldId: fileId, message: 'File must be under 1GB.' });
   }
   return errors;
 }
