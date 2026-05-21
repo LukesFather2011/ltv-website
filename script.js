@@ -34,7 +34,7 @@ const CURRENT_CHALLENGE = {
   desc:            'Create a track in the style of any artist in the Discord. It could be their signature sound, their usual BPM, their go-to genre — just make us feel like it could have been them.',
   deadline:        'May 20, 2026',
   type:            'mimic',       // 'standard' or 'mimic'
-  submissionsOpen: true,          // ← flip to false to hide the submission button
+  submissionsOpen: false,          // ← flip to false to hide the submission button
   votingOpen:      false,         // ← flip to true when voting is active
 };
 
