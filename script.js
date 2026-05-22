@@ -35,7 +35,7 @@ const CURRENT_CHALLENGE = {
   deadline:        'May 20, 2026',
   type:            'mimic',       // 'standard' or 'mimic'
   submissionsOpen: false,          // ← flip to false to hide the submission button
-  votingOpen:      false,         // ← flip to true when voting is active
+  votingOpen:      true,         // ← flip to true when voting is active
 };
 
 const CURRENT_PLAYLIST = {
@@ -47,7 +47,7 @@ const CURRENT_PLAYLIST = {
 
 const FORMS = {
   challengeSubmit: 'https://forms.gle/9oFPNXYuXviJzNcP7',   // ← paste your Google Form URL here
-  voting:          'YOUR_VOTING_GOOGLE_FORM_URL',                  // ← paste your voting Google Form URL here
+  voting:          'https://forms.gle/QGYhFkHCRZXbymqX6',                  // ← paste your voting Google Form URL here
   playlistSubmit:  'YOUR_PLAYLIST_SUBMISSION_GOOGLE_FORM_URL',     // ← paste your Google Form URL here
 };
 
