@@ -56,7 +56,7 @@ const PLAYLISTS = [
     id:       'fossil-eater-playlist',
     title:    'Fossil Eater Sample Playlist',
     subtitle: 'Sample Flip',
-    embedUrl:'https://soundcloud.com/limitless_truevibe/sets/fossil-eater-sample-playlist?si=c1a48c5ab02b4ac69f2c1cd2152f3a2d&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
+    embedUrl:'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2231036558&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
   },
   {
     id:       'ltv-vol-4',
