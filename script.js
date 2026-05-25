@@ -30,39 +30,39 @@
 ============================================================================= */
 
 const CURRENT_CHALLENGE = {
-  title:           'Doppelganger',
-  desc:            'Create a track in the style of any artist in the Discord. It could be their signature sound, their usual BPM, their go-to genre — just make us feel like it could have been them.',
-  deadline:        'May 20, 2026',
-  type:            'mimic',       // 'standard' or 'mimic'
-  submissionsOpen: false,          // ← flip to false to hide the submission button
-  votingOpen:      true,         // ← flip to true when voting is active
+  title:           'Chu-Teng Flip Challenge',
+  desc:            'Flip the sample provided in beat-challenge-info channel in our discord!',
+  deadline:        'June 20, 2026',
+  type:            'standard',       // 'standard' or 'mimic'
+  submissionsOpen: true,          // ← flip to false to hide the submission button
+  votingOpen:      false,         // ← flip to true when voting is active
 };
 
 const CURRENT_PLAYLIST = {
-  title:           'Coming Soon',
-  desc:            'The next LTV community playlist is on its way. Keep an eye on Discord for the announcement.',
-  deadline:        '',
-  submissionsOpen: false,         // ← flip to true when accepting submissions
+  title:           'LTV Summer Compilation vol 2',
+  desc:            'Check out the discord for more info, we are creating tracks to capture the feel of being on a beach in summer.',
+  deadline:        'June 07, 2026',
+  submissionsOpen: true,         // ← flip to true when accepting submissions
 };
 
 const FORMS = {
-  challengeSubmit: 'https://forms.gle/9oFPNXYuXviJzNcP7',   // ← paste your Google Form URL here
-  voting:          'https://forms.gle/QGYhFkHCRZXbymqX6',                  // ← paste your voting Google Form URL here
-  playlistSubmit:  'YOUR_PLAYLIST_SUBMISSION_GOOGLE_FORM_URL',     // ← paste your Google Form URL here
+  challengeSubmit: 'https://forms.gle/zB4Czk5pQLmA6Xob8',   // ← paste your Google Form URL here
+  voting:          'PLACEHOLDER',                  // ← paste your voting Google Form URL here
+  playlistSubmit:  'https://forms.gle/KTMPK7TTegfRaoq16',     // ← paste your Google Form URL here
 };
 
 const PLAYLISTS = [
+  {
+    id:       'fossil-eater-playlist',
+    title:    'Fossil Eater Sample Playlist',
+    subtitle: 'Sample Flip',
+    embedUrl:'https://soundcloud.com/limitless_truevibe/sets/fossil-eater-sample-playlist?si=c1a48c5ab02b4ac69f2c1cd2152f3a2d&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
+  },
   {
     id:       'ltv-vol-4',
     title:    'LTV Vol. 4',
     subtitle: 'Community Mix',
     embedUrl: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2202404786&color=%23d181a8&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
-  },
-  {
-    id:       'can-you-feel-the-love',
-    title:    'Can You Feel the Love',
-    subtitle: 'Valentines Day Themed Playlist',
-    embedUrl: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2187240119&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
   },
   {
     id:       '90s-playlist',
