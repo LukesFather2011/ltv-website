@@ -30,39 +30,39 @@
 ============================================================================= */
 
 const CURRENT_CHALLENGE = {
-  title:           'Chu-Teng Flip Challenge',
-  desc:            'Flip the sample provided in beat-challenge-info channel in our discord!',
-  deadline:        'June 20, 2026',
+  title:           'Cookup Challenge',
+  desc:            'Submit a sample, get a sample, make a track.',
+  deadline:        'Concluded',
   type:            'standard',       // 'standard' or 'mimic'
-  submissionsOpen: true,          // ← flip to false to hide the submission button
+  submissionsOpen: false,          // ← flip to false to hide the submission button
   votingOpen:      false,         // ← flip to true when voting is active
 };
 
 const CURRENT_PLAYLIST = {
-  title:           'LTV Summer Compilation vol 2',
-  desc:            'Check out the discord for more info, we are creating tracks to capture the feel of being on a beach in summer.',
-  deadline:        'June 07, 2026',
-  submissionsOpen: true,         // ← flip to true when accepting submissions
+  title:           'None right now. Stay tuned!',
+  desc:            'We will kickstart a playlist soon.',
+  deadline:        'None',
+  submissionsOpen: false,         // ← flip to true when accepting submissions
 };
 
 const FORMS = {
-  challengeSubmit: 'https://forms.gle/zB4Czk5pQLmA6Xob8',   // ← paste your Google Form URL here
+  challengeSubmit: 'PLACEHOLDER',   // ← paste your Google Form URL here
   voting:          'PLACEHOLDER',                  // ← paste your voting Google Form URL here
-  playlistSubmit:  'https://forms.gle/KTMPK7TTegfRaoq16',     // ← paste your Google Form URL here
+  playlistSubmit:  'PLACEHOLDER',     // ← paste your Google Form URL here
 };
 
 const PLAYLISTS = [
   {
-    id:       'fossil-eater-playlist',
-    title:    'Fossil Eater Sample Playlist',
+    id:       'cookup-challenge',
+    title:    'Cookup Vol. 1',
     subtitle: 'Sample Flip',
-    embedUrl:'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2231036558&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
+    embedUrl:'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2299905747&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
   },
   {
-    id:       'ltv-vol-4',
-    title:    'LTV Vol. 4',
-    subtitle: 'Community Mix',
-    embedUrl: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2202404786&color=%23d181a8&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
+    id:       'doppleganger',
+    title:    'Doppleganger Challenge',
+    subtitle: 'LTV Artist Mimic',
+    embedUrl: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2240513774&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
   },
   {
     id:       '90s-playlist',
