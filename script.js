@@ -30,9 +30,9 @@
 ============================================================================= */
 
 const CURRENT_CHALLENGE = {
-  title:           'Cookup Challenge',
-  desc:            'Submit a sample, get a sample, make a track.',
-  deadline:        'Concluded',
+  title:           'Spooky Collab Challenge',
+  desc:            'Randomly assigned collab partners make spooky tracks!',
+  deadline:        'Not yet open for submissions.',
   type:            'standard',       // 'standard' or 'mimic'
   submissionsOpen: false,          // ← flip to false to hide the submission button
   votingOpen:      false,         // ← flip to true when voting is active
