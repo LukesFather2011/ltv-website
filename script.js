@@ -53,6 +53,12 @@ const FORMS = {
 
 const PLAYLISTS = [
   {
+    id:       'ltv-community-5',
+    title:    'LTV Community Playlist Vol. 5',
+    subtitle: 'Highlight of LTV Commnunity',
+    embedUrl:'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2300671617&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true',
+  },
+  {
     id:       'cookup-challenge',
     title:    'Cookup Vol. 1',
     subtitle: 'Sample Flip',
