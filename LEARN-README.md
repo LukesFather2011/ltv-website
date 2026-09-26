@@ -26,7 +26,7 @@ All four new files go in the **same folder as `index.html`**. Nothing else is ne
 1. Drop `learn.html`, `learn.css`, `learn.js`, and `learn-content.js` into your site folder.
 2. Add a **Learn** link to `index.html` in three places (see below).
 3. Deploy to Netlify like normal.
-4. Visit `limitlesstruevibe.com/learn.html` and run `LTVLearn.check()` in the console (see "Checking for mistakes").
+4. Visit `limitlesstruevibe.com/learn.html` and run `LTVLearn.check()` in the console (see "Checking your work").
 
 ### Add the Learn link to index.html
 
@@ -64,186 +64,404 @@ All four new files go in the **same folder as `index.html`**. Nothing else is ne
 > Progress is per browser, per device, just like the admin panel. Someone who switches from phone to laptop starts fresh on the new device (they can use "Unlock all modules" to jump ahead).
 
 ---
+## Contents of the editing guide
 
-## Editing lessons
-
-Everything is in **`learn-content.js`**. Open it, find the module by its title, and change the text. Save, deploy, done.
-
-- Lesson text (`body`) is HTML. Use `<p>` for paragraphs and `<strong>` for bold.
-- `<p class="tip">` makes a highlighted tip box.
-- `<p class="formula">` shows a step pattern in monospace, like `whole, whole, half`.
-- Inside text wrapped in single quotes, write apostrophes as `\'`, e.g. `'That\'s it'`. Inside backticks (the `body` blocks), apostrophes are fine as-is.
-
-### Notes
-
-Notes are written the way your DAW shows them: `C4`, `F#3`, `Bb2`. **C4 = middle C.** Sharps use `#`, flats use a lowercase `b`.
-
-### A piano roll
-
-```js
-roll: {
-  low:  'C4',                         // lowest row shown
-  high: 'C5',                         // highest row shown
-  notes: [['C4','E4','G4'], ['F4']],  // one array per column, left to right
-  stepDur: 0.5,                       // seconds per column (optional)
-  labels: 'all',                      // 'all', 'c' (only C rows), or 'none' (optional)
-  highlight: ['C','E','G'],           // shade these rows (optional)
-  backing: [['C3']],                  // quiet notes played underneath, not drawn (optional)
-  sections: [['C major', 1], ['F', 1]],  // label groups of columns (optional)
-}
-```
-
-`sections` labels groups of columns in the timeline ruler and in a "Now playing" caption under the roll. Each entry is `[label, how many columns it covers]`, and the numbers must add up to the total number of columns (`LTVLearn.check()` catches mismatches). Use `''` as the label for a silent gap. An optional third item sets a longer caption for "Now playing" (e.g. `['Perfect 5th', 1, 'Perfect 5th (7 half steps)']`), and `cellMin: 52` on the roll widens columns so single-column labels have room:
-```js
-sections: [['Octave', 4], ['Perfect 5th', 4], ['Tritone', 3]],
-```
-
-`backing` can be one column (repeats under every column) or one per column, like a bass part under chords.
+1. [Your editing workflow](#1-your-editing-workflow)
+2. [How learn-content.js is organized](#2-how-learn-contentjs-is-organized)
+3. [Five rules that prevent almost every error](#3-five-rules-that-prevent-almost-every-error)
+4. [Notes and piano rolls](#4-notes-and-piano-rolls)
+5. [Common edits, step by step](#5-common-edits-step-by-step)
+6. [Step type reference](#6-step-type-reference)
+7. [Editing the graduation page and toolkit](#7-editing-the-graduation-page-and-toolkit)
+8. [How edits affect people's saved progress](#8-how-edits-affect-peoples-saved-progress)
+9. [Checking your work and fixing errors](#9-checking-your-work-and-fixing-errors)
 
 ---
 
-## The four step types
+## 1. Your editing workflow
 
-**1. Lesson card**
+Every lesson, quiz, exercise, and toolkit page is in **one file: `learn-content.js`**. You never need to touch `learn.js` (the engine) or `learn.css` (the look) to change what the course teaches.
+
+The loop, every time:
+
+1. **Open** `learn-content.js` in VS Code (or any text editor).
+2. **Find** the spot with `Ctrl+F` (Mac: `Cmd+F`). Search for words you can see on the page, like the module title or a sentence from the lesson.
+3. **Edit** and save.
+4. **Preview locally:** double-click `learn.html` in your site folder to open it in your browser. No server needed.
+   - To jump straight to a module, add its id to the address: `learn.html#/m/minor-scale`.
+   - Locked module? Open the console (F12) and run `LTVLearn.unlockAll()`.
+5. **Check:** in the console, run `LTVLearn.check()`. You want "All 22 modules look good."
+6. **Deploy** to Netlify like normal, then hard refresh the live site (`Ctrl+Shift+R`, Mac: `Cmd+Shift+R`).
+
+> Your local preview saves progress separately from the live site, so testing never messes up anything real.
+
+> Before a big edit, make a copy of `learn-content.js` (e.g. `learn-content-backup.js`). If something breaks and you can't find why, put the backup back.
+
+---
+
+## 2. How learn-content.js is organized
+
+```
+learn-content.js
+│
+├── LEARN_UNITS  ← the course
+│   ├── Unit 1  { id, title, blurb, recap, color, modules: [...] }
+│   │   ├── Module  { id, title, minutes, summary, steps: [...] }
+│   │   │   ├── Step  { type: 'learn', ... }    ← a lesson card
+│   │   │   ├── Step  { type: 'quiz', ... }     ← multiple choice
+│   │   │   ├── Step  { type: 'build', ... }    ← piano roll exercise
+│   │   │   └── Step  { type: 'drill', ... }    ← randomized practice
+│   │   └── Module ...
+│   └── Unit 2 ...
+│
+└── LEARN_EXTRAS  ← everything after the course
+    ├── graduation   (Discord channel + role names, share message)
+    ├── capstone     (the 8-step track checklist)
+    ├── recipes      (genre recipes)
+    ├── gym          (practice gym drills)
+    └── cheatsheet   (the printable reference, plain HTML)
+```
+
+Steps show up in the order they're listed. Modules and units too. Whatever order you put them in the file is the order learners see.
+
+**Unit fields**
+
+| Field | What it does |
+|---|---|
+| `id` | Internal name. Never change it after launch. |
+| `title` | Shown on the course map lane. |
+| `blurb` | One-line description under the title on the course map. |
+| `recap` | "What you can do now" line on the graduation page. |
+| `color` | The lane color, e.g. `'#e39ab8'`. |
+| `modules` | The list of modules. |
+
+**Module fields**
+
+| Field | What it does |
+|---|---|
+| `id` | Internal name and the module's link (`learn.html#/m/your-id`). Lowercase, dashes, no spaces. **Never change it after launch.** |
+| `title` | Shown on the course map and at the top of the module. Safe to change anytime. |
+| `minutes` | Time estimate shown on the course map. |
+| `summary` | Shown on the "Module complete" screen. Write it as "You can now...". |
+| `steps` | The list of steps. |
+
+---
+
+## 3. Five rules that prevent almost every error
+
+The file is JavaScript, which is picky about punctuation. One missing comma blanks the whole page. These five rules cover nearly every mistake.
+
+**Rule 1: Every item in a list ends with a comma.** Steps, modules, options, notes: if something comes after it, it needs a comma. A comma after the last item is fine too, so when in doubt, add one.
+
+```js
+options: ['2', '3', '4', '5'],      // ✅ commas between items, comma after the ]
+options: ['2' '3', '4', '5']        // ❌ missing comma after '2' and after ]
+```
+
+**Rule 2: Know your three kinds of quotes.**
+
+| Quote | Used for | Watch out for |
+|---|---|---|
+| `'single'` | Short text: titles, hints, options, note names | An apostrophe inside ends the text early. Write `\'` instead: `'That\'s it'`. |
+| `` `backtick` `` | Long text: every `body` | Apostrophes are fine inside. Don't put a backtick inside. |
+| `"double"` | Inside HTML, e.g. `class="tip"` | Fine inside backticks. |
+
+```js
+hint: 'It\'s on a black key.',      // ✅ escaped apostrophe
+hint: 'It's on a black key.',       // ❌ the ' in It's ends the text early
+body: `<p>It's all white keys.</p>`, // ✅ apostrophes are fine inside backticks
+```
+
+**Rule 3: Every opener needs a closer.** `{` needs `}`, `[` needs `]`, `` ` `` needs `` ` ``. VS Code highlights the matching bracket when you click next to one. Use that to check.
+
+**Rule 4: Never change an `id` after launch.** Saved progress is keyed to ids. Titles are safe to change; ids are not. (See section 8.)
+
+**Rule 5: Quiz answers count from 0.** The first option is `0`, the second is `1`, and so on.
+
+```js
+options: ['7', '8', '12', '24'],
+answer: 2,          // → '12' (the third option)
+```
+
+---
+
+## 4. Notes and piano rolls
+
+### Note names
+
+Write notes the way a DAW shows them: letter, optional `#` or `b`, then octave number.
+
+- `C4` is middle C. `C5` is one octave up, `C3` one octave down.
+- Sharps: `C#4`, `F#3`. Flats: `Bb3`, `Eb4` (lowercase `b`). `C#4` and `Db4` are the same row.
+- The octave number goes up at **C**, not A. So the order is `A3, B3, C4, D4`.
+
+### Working out notes for an answer
+
+Use the same method the course teaches: start on the root (zero) and count rows up.
+
+```
+C  C#  D  D#  E  F  F#  G  G#  A  A#  B  C
+0   1  2   3  4  5   6  7   8  9  10 11 12
+```
+
+Example: a minor 7th chord on A is `0 3 7 10` (from the cheat sheet). Starting at A3: 3 up is C4, 7 up is E4, 10 up is G4, so the answer is `['A3','C4','E4','G4']`.
+
+### The piano roll settings
+
+Any `learn`, `quiz`, or `build` step can have a `roll`. Only `low` and `high` are required.
+
+```js
+roll: {
+  low:  'C4',                          // lowest row shown (required)
+  high: 'C5',                          // highest row shown (required)
+  notes: [['C4','E4','G4'], ['F4']],   // demo notes, one [ ] per column, left to right
+  stepDur: 0.5,                        // seconds per column when played
+  labels: 'all',                       // key labels: 'all', 'c' (only C rows), or 'none'
+  highlight: ['C','E','G'],            // shade these rows (note names without numbers)
+  backing: [['C3']],                   // quiet notes played under it, not drawn
+  sections: [['C major', 1], ['F', 1]],// labels over groups of columns
+  cellMin: 52,                         // wider columns (only if labels are cramped)
+}
+```
+
+Details:
+- **Columns:** each `[ ]` in `notes` is one column. Several notes in one column play together (a chord). An empty `[]` is a silent column.
+- **Range:** every note must be between `low` and `high`, or `LTVLearn.check()` will flag it. Keep ranges tight: 12–16 rows fits nicely on phones.
+- **`backing`:** one column repeats under every column, like a held bass note. Or give one per column, like a bassline under chords.
+- **`sections`:** each entry is `[label, how many columns]`. The numbers must add up to the total columns. `''` labels a gap. An optional third item is a longer "Now playing" caption: `['Perfect 5th', 1, 'Perfect 5th (7 half steps)']`.
+
+---
+
+## 5. Common edits, step by step
+
+### Fix wording or a typo
+
+Search for the text, change it, save. Lesson text lives in `body`, between backticks. It's HTML:
+
+| You want | Write |
+|---|---|
+| A paragraph | `<p>Text here.</p>` |
+| Bold | `<strong>word</strong>` |
+| A highlighted tip box | `<p class="tip">Tip text.</p>` |
+| A formula box (monospace) | `<p class="formula">whole, whole, half</p>` |
+| A line break | `<br>` |
+
+### Rename a module or unit
+
+Change `title` only. Leave `id` alone.
+
+```js
+id: 'twelve-notes',          // leave this alone
+title: 'Meet the notes',     // change this freely
+```
+
+### Add a lesson card
+
+Copy this, paste it into a module's `steps: [ ... ]` where you want it, and fill it in:
+
 ```js
 {
   type: 'learn',
-  title: 'Every row is a note',
-  body: `<p>Lesson text here.</p>`,
-  roll: { ... },          // optional demo
-}
+  title: 'Your card title',
+  body: `
+    <p>First paragraph.</p>
+    <p>Second paragraph.</p>
+  `,
+  roll: { low: 'C4', high: 'C5', notes: [['C4'],['E4'],['G4']] },   // optional: delete this line for no demo
+},
 ```
 
-**2. Multiple choice**
+### Add a multiple-choice question
+
 ```js
 {
   type: 'quiz',
-  prompt: 'How many half steps in a major 3rd?',
-  options: ['2', '3', '4', '5'],
-  answer: 2,              // position of the right option, counting from 0
-  explain: 'Shown after they get it right.',
-}
+  prompt: 'Your question?',
+  options: ['First', 'Second', 'Third', 'Fourth'],
+  answer: 1,                                  // counts from 0, so this is 'Second'
+  explain: 'Shown after they pick the right one. Explain why.',
+},
 ```
 
-**3. Piano roll exercise**
+Options show in the order you write them, so vary where the right answer sits. Wrong picks say "Try another answer," and they can keep trying.
+
+### Add a piano roll exercise
+
 ```js
 {
   type: 'build',
-  prompt: 'Build a C major triad.',
-  hint: 'Shown after a wrong answer.',
-  roll: { low: 'C4', high: 'C5', steps: 1 },
-  answer: [['C4','E4','G4']],
+  prompt: 'Build a <strong>G major</strong> triad.',
+  hint: 'G, then up 4 half steps, then up 3 more.',        // shown after a wrong answer
+  roll: { low: 'G3', high: 'G4', steps: 1 },
+  answer: [['G3','B3','D4']],
   match: 'pitchClass',
-  explain: 'Shown when they get it.',
-}
+  explain: 'Shown when they get it right.',
+},
 ```
-Extra roll settings for exercises:
-- `steps`: number of columns
-- `mono: true`: one note per column (use it for scales and melodies)
-- `given: [['C4'], []]`: locked notes already placed for them
 
-`match` sets how strict the grading is:
-- `'exact'`: must be the exact rows in `answer`.
-- `'pitchClass'`: right note names in any octave. This is forgiving and good for chords.
-- `'allowed'`: every column needs one note from a list. Add `allowed: ['F','A','C']`. Good for open-ended melodies.
+Choose the grading with `match`:
 
-Add `reminder: 'whole, whole, half, whole, whole, whole, half'` to any exercise to show that formula in a highlighted box every time someone misses. All the scale-building exercises use it.
+| `match` | Passes when | Good for |
+|---|---|---|
+| `'exact'` | Exactly the rows in `answer` | Scales, specific voicings, "place the note above X" |
+| `'pitchClass'` | Right note names, any octave | Chords, where any voicing is fine |
+| `'allowed'` | Every column has one note from `allowed` | Open-ended melodies. Add `allowed: ['F','A','C']`. |
 
-`answer` must always be filled in, even for `'allowed'`, because it's what **Show answer** displays.
+Useful extras:
+- `steps: 8` gives 8 columns. `mono: true` allows one note per column (scales and melodies).
+- `given: [['D4'], []]` places locked notes they build on. Include given notes in `answer` too.
+- `reminder: 'whole, whole, half, whole, whole, whole, half'` shows that formula in a box on every wrong answer.
+- `answer` is always required, even with `'allowed'`, because it's what **Show answer** reveals.
 
-**4. Drill (randomized practice)**
+`answer` needs one `[ ]` per column, the same count as `steps`. Run `LTVLearn.check()` after adding one: it confirms the answer passes its own grading.
+
+### Add a practice drill
+
 ```js
 {
   type: 'drill',
   prompt: 'Which interval did you hear?',
   drill: 'intervalEar',
   settings: { intervals: [12, 7, 4, 3] },
-  pass: 5,                // correct answers needed to finish
-}
+  pass: 5,                   // correct answers needed to finish
+},
 ```
 
-| Drill | What it does | Settings |
+| `drill` | What it does | `settings` |
 |---|---|---|
-| `noteName` | Shows a note, only C labeled. Name it. | `accidentals: true/false` |
-| `intervalEar` | Plays two notes. Name the interval. | `intervals: [12, 7, 5, 4, 3]` (in half steps) |
+| `noteName` | Shows a note (only C labeled). Name it. | `{ accidentals: true }` or `false` for white keys only |
+| `intervalEar` | Plays two notes. Name the interval. | `{ intervals: [12, 7, 5, 4, 3] }`, sizes in half steps |
 | `consonance` | Stable or tense? | none |
-| `chordQuality` | Plays a chord. Name the type. | `qualities: ['maj','min','dim','sus2','sus4','maj7','m7','dom7','maj9','m9']` |
+| `chordQuality` | Plays a chord. Name the type. | `{ qualities: ['maj','min'] }`. Options: `maj` `min` `dim` `sus2` `sus4` `maj7` `m7` `dom7` `maj9` `m9` |
 | `scaleQuality` | Plays a scale. Major or minor? | none |
-| `inKey` | Shows a note plus a key. In or out? | `keys: ['C major','A minor', ...]` |
+| `inKey` | Shows a note and a key. In or out? | `{ keys: ['C major', 'A minor'] }`. Any root + `major` or `minor`. |
 
-Wrong answers never reset the drill. They just show the right answer and move on.
+### Remove or reorder steps
+
+Each step starts with `{` and ends with `},`. Select from the `{` to its matching `},` and cut or move it. Check the steps above and below still end in `},`.
+
+### Add a new module
+
+1. Find a module like the one you want. Select from its `{` (the line above `id:`) down to its closing `},`, and copy.
+2. Paste it where the new module should go, inside a unit's `modules: [ ... ]`.
+3. Give it a **new** `id`: lowercase, dashes, unique.
+4. Change `title`, `minutes`, `summary`, and replace the `steps`.
+5. Run `LTVLearn.check()`. It catches duplicate ids.
+
+### Add a new unit
+
+Copy a whole unit block (from `{` above `id: 'unit-6'` to its closing `},`) and paste it after the last unit, before the `];` that closes `LEARN_UNITS`. Give it a new `id` (like `'unit-7'`), a `title`, `blurb`, `recap`, `color`, and its `modules`.
+
+> Adding modules to the course un-graduates people until they finish the new ones. See section 8.
 
 ---
 
-## Adding a new module
+## 6. Step type reference
 
-1. In `learn-content.js`, copy an existing module, everything from `{ id: ...` to its closing `},`.
-2. Paste it where you want it inside a unit's `modules: [ ... ]` list.
-3. Give it a new, unique `id` (lowercase, dashes, no spaces). **Never change an `id` after launch**, because people's saved progress is keyed to it.
-4. Update `title`, `minutes`, `summary` (shown on the "Module complete" screen), and the `steps`.
+| Type | Required | Optional |
+|---|---|---|
+| `learn` | `title`, `body` | `roll` |
+| `quiz` | `prompt`, `options`, `answer`, `explain` | `roll` (a demo above the options) |
+| `build` | `prompt`, `roll` (with `steps`), `answer`, `match` | `hint`, `reminder`, `explain`, `allowed` (for `'allowed'`), and in `roll`: `given`, `mono`, `labels`, `backing` |
+| `drill` | `prompt`, `drill` | `settings`, `pass` (default 5) |
 
-To add a whole new unit, copy a unit block (`{ id: 'unit-6', title: ..., color: ..., modules: [...] }`) and give it a new `id` and a `color` for its lane.
+`prompt` can use HTML like `<strong>`. Learners see a small label above each step automatically: Lesson, Quick check, Try it, or Practice.
 
 ---
 
-## Checking for mistakes
+## 7. Editing the graduation page and toolkit
 
-After editing, open `learn.html`, press **F12** → **Console**, and type:
+All of it is in the `LEARN_EXTRAS` block at the bottom of `learn-content.js`.
+
+| Section | What to edit |
+|---|---|
+| `graduation` | `channel` and `role` (the Discord names shown on the grad page), `discordInvite`, and `shareMessage` (the copied Discord message). |
+| `capstone` | `title`, `intro`, and `steps`. Each step has `title`, `body`, an optional `roll`, `tasks` (checkboxes: `{ id, text }`, ids must be unique and never change), and `modules` (a list of module ids for the "Refresh" links). |
+| `recipes` | Each genre: `id`, `name`, `tagline`, `tempo`, `keys`, `body`, `roll`, `modules`. Copy one to add a genre. |
+| `gym` | Each drill: `id`, `name`, `drill`, `settings`, `prompt`. Same drill types as section 5. Don't change ids (best streaks are saved by id). |
+| `cheatsheet` | Plain HTML between backticks. Each box is a `<section class="cs-block">` with an `<h2>` and a table or list. |
+
+The unit `recap` lines on the graduation page are on each unit at the top of the file.
+
+**Setting up the Discord role (one time):** create a **#theory-lab** channel and a **Theory Lab Grad** role. If you name them differently, change `channel` and `role` under `graduation` to match. When someone posts their grad card there, give them the role.
+
+**Preview the grad page:** `LTVLearn.previewGraduation()` in the console marks everything done and opens it. `LTVLearn.reset()` clears it.
+
+---
+
+## 8. How edits affect people's saved progress
+
+Progress lives in each visitor's browser and is keyed to ids.
+
+| You change | What happens to learners |
+|---|---|
+| Any text, title, hint, or roll | Nothing. They see the new version. |
+| Add, remove, or reorder steps in a module | Finished modules stay finished. Anyone mid-module resumes by step number, so they might land one step earlier or later. Harmless. |
+| A module's `id` | Their completion for that module disappears, and later modules can lock again. **Avoid this.** |
+| Add a new module | It appears in place. It's unlocked for anyone who finished the module before it. |
+| Add a module after they've graduated | The graduation page shows "Almost there" until they finish the new module. The home page tells them what's left. |
+| Remove a module | Their other progress is unaffected. |
+| A capstone task `id` or gym drill `id` | That checkbox unchecks, or that best streak resets. |
+
+---
+
+## 9. Checking your work and fixing errors
+
+### Run the checker after every edit
+
+Open `learn.html`, press **F12** → **Console**, and run:
 
 ```js
 LTVLearn.check()
 ```
 
-It scans the whole course and lists anything off:
+It lists anything off, with the module id and step number:
 - misspelled note names
 - notes outside a roll's range
-- quiz answer numbers that don't exist
+- quiz answer numbers with no matching option
 - exercises whose own answer wouldn't pass
+- section labels that don't add up
+- duplicate ids
+- Refresh links to modules that don't exist
 
 "All 22 modules look good." means you're clear.
 
-Other console helpers:
+### If the page says "The Theory Lab is taking a quick break"
+
+The course map is replaced with that message when `learn-content.js` has a typo, almost always a punctuation mistake from section 3. The browser stops reading the file at the error. `LTVLearn.check()` will also tell you the file didn't load.
+
+1. Open the console. Look for a red message like:
+   `Uncaught SyntaxError: Unexpected identifier 's'`
+   with `learn-content.js:412` on the right side of that line.
+2. The number after the file name is the **line** (412). Click it to jump there, or go to that line in VS Code (`Ctrl+G`, then type the number).
+3. The mistake is on that line or the one just above it. Check for a missing comma, an unescaped apostrophe in single quotes, or a missing bracket.
+
+(The `'s'` in that example error is a real one: `'E's your root'` ends the text at `E`, and the browser can't make sense of the `s` after it.)
+
+If the console says **`LTVLearn is not defined`** instead, the problem is `learn.js` itself not loading. You're probably on a different page (check the address says `learn.html`), or the file didn't get uploaded.
+
+| Error says | Usually means |
+|---|---|
+| `Unexpected identifier` or `Unexpected string` | A missing comma, or an apostrophe ending a `'single quoted'` text early |
+| `Unexpected token '}'` or `']'` | An extra or missing bracket just above |
+| `missing ) after argument list` | A bracket was never closed |
+| `"X" isn't a note name` | A typo in a note, like `C#` with no octave, or `H4` |
+
+VS Code also underlines most of these in red as you type. Hover over the squiggle to see what's wrong.
+
+### Changes not showing up on the live site
+
+Hard refresh with `Ctrl+Shift+R` (Mac: `Cmd+Shift+R`). Browsers hold onto old copies of `learn-content.js`.
+
+### Console helpers
 
 ```js
-LTVLearn.unlockAll()   // open every module in your browser (handy for proofreading)
-LTVLearn.progress()    // see what's saved in this browser
-LTVLearn.reset()       // wipe your own progress and start over
+LTVLearn.check()              // scan the course for mistakes
+LTVLearn.unlockAll()          // open every module in this browser
+LTVLearn.progress()           // see what's saved in this browser
+LTVLearn.reset()              // wipe progress in this browser
 LTVLearn.previewGraduation()  // mark everything done and open the grad page
 ```
-
-`LTVLearn.check()` also checks the extras. It flags broken module links, rolls with notes out of range, duplicate capstone task ids, and unknown gym drills.
-
----
-
-## After the course: graduation + toolkit
-
-Finishing all 22 modules takes learners to a **graduation page** (`learn.html#/complete`). It has:
-- a big congratulations with their start and finish dates
-- a "What you can do now" recap, one line per unit (the `recap:` line on each unit in `learn-content.js`)
-- a downloadable **grad card**: a PNG with their name, sized for Discord
-- a **Copy Discord message** button
-- **What's next:** the toolkit below, plus links to the beat challenge and playlists
-
-The home page also has a **Put it to work** row, so anyone can use the toolkit before finishing:
-
-| Page | Link | What it is |
-|---|---|---|
-| Capstone | `#/capstone` | 8-step checklist for building a real track in their DAW. Each step has an example to play, all from one track in A minor. Checkboxes save. |
-| Genre recipes | `#/recipes` | Lofi, deep house, future bass, techno, synthwave, and liquid DnB, each with a playable loop and links to the lessons behind it. |
-| Practice gym | `#/gym` | Endless versions of every drill. Best streak per drill is saved. |
-| Cheat sheet | `#/cheatsheet` | One-page reference with a Print / Save as PDF button. Prints clean on white. |
-
-All of it is editable in the `LEARN_EXTRAS` block at the bottom of `learn-content.js`. The capstone steps, recipes, gym drills, and cheat sheet HTML are all there.
-
-### Set up the Discord role (one time)
-
-1. In Discord, create a channel called **#theory-lab** and a role called **Theory Lab Grad**.
-2. If you pick different names, update `channel` and `role` in `LEARN_EXTRAS.graduation`.
-3. When someone posts their grad card in the channel, give them the role.
-
-### Preview the graduation page yourself
-
-In the console: `LTVLearn.previewGraduation()` marks everything finished and opens the page. `LTVLearn.reset()` clears it afterwards.
 
 ---
 
@@ -251,12 +469,14 @@ In the console: `LTVLearn.previewGraduation()` marks everything finished and ope
 
 | Unit | Modules |
 |---|---|
-| 1. Reading the piano roll | The 12 notes · Half steps and whole steps · Sharps and flats |
+| 1. Reading the piano roll | Meet the notes · Half steps and whole steps · Sharps and flats |
 | 2. Scales and keys | The major scale · The minor scale · Staying in key · Relative major and minor |
 | 3. Intervals | Measuring intervals (incl. the tritone) · Hearing intervals · Stable and tense sounds |
 | 4. Chords | Major and minor chords · The chords in a key · Chord numbers · Seventh chords · Inversions and voice leading |
 | 5. Writing parts | Chord progressions · Basslines from chords · Writing melodies |
 | 6. Going further | Modes for producers · Sus and extended chords · Borrowed chords · Tension and release |
+
+After the course: graduation page (`#/complete`), capstone (`#/capstone`), genre recipes (`#/recipes`), practice gym (`#/gym`), and cheat sheet (`#/cheatsheet`).
 
 ---
 

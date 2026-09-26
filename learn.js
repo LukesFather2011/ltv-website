@@ -1074,6 +1074,16 @@
 
   function renderHome(app) {
     document.title = 'Theory Lab — Limitless TrueVibe';
+    if (!UNITS.length) {
+      // learn-content.js is missing or has a typo, so there's nothing to show
+      app.innerHTML = `
+        <div class="page">
+          <h1 class="player-title">The Theory Lab is taking a quick break</h1>
+          <p class="page-lede">The lessons didn't load. Try refreshing in a minute.</p>
+          <p class="page-lede">Site owner: learn-content.js is missing or has a typo. Open the console (F12) for the exact line.</p>
+        </div>`;
+      return;
+    }
     const done = doneCount();
     const total = ALL.length;
     const upNext = nextEntry();
@@ -1978,6 +1988,11 @@
       console.log('All modules marked complete in this browser. LTVLearn.reset() undoes it.');
     },
     check() {
+      if (!UNITS.length) {
+        const msg = 'learn-content.js did not load, so there is nothing to check. Look above for a red SyntaxError: it names the line with the typo.';
+        console.error(msg);
+        return [msg];
+      }
       const problems = validateContent();
       if (problems.length) console.warn(`Found ${problems.length} problem(s):\n` + problems.join('\n'));
       else console.log(`All ${ALL.length} modules look good.`);

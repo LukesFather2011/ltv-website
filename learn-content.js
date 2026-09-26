@@ -69,8 +69,8 @@ const LEARN_UNITS = [
     modules: [
 
       {
-        id: 'twelve-notes',
-        title: 'The 12 notes',
+        id: 'twelve-notes',        // id never changes (saved progress uses it)
+        title: 'Meet the notes',
         minutes: 5,
         summary: 'You know there are only 12 notes, that they repeat every octave, and how to find C in any piano roll.',
         steps: [
@@ -153,6 +153,7 @@ const LEARN_UNITS = [
             body: `
               <p>Moving up or down by one row is a <strong>half step</strong> (also called a semitone). It's the smallest distance in the piano roll.</p>
               <p>Every row counts, black or white. From C to C# is one half step.</p>
+              <p>To measure a distance, always <strong>start counting from the note you begin on</strong>. Musicians call that starting note the <strong>root</strong>. You'll hear that word a lot.</p>
             `,
             roll: { low: 'C4', high: 'E4', notes: [['C4'],['C#4'],['C4'],['C#4']], stepDur: 0.4 },
           },
@@ -164,6 +165,21 @@ const LEARN_UNITS = [
               <p>You'll use half and whole steps constantly. They're the recipe for every scale in the next unit.</p>
             `,
             roll: { low: 'C4', high: 'E4', notes: [['C4'],['D4'],['C4'],['D4']], stepDur: 0.4 },
+          },
+          {
+            type: 'learn',
+            title: 'How to count: start at zero',
+            body: `
+              <p>This is where most people slip up. When you count half steps, the <strong>root doesn't count as 1</strong>. It's your starting point, <strong>zero</strong>. Only the moves count.</p>
+              <p>From C up to E: start on C (zero). One row up to C# is <strong>1</strong>. D is <strong>2</strong>. D# is <strong>3</strong>. E is <strong>4</strong>. So C to E is 4 half steps, not 5.</p>
+              <p class="tip">Think of it like counting stairs. Standing on the floor isn't a step. Each time you move up a stair, that's one.</p>
+            `,
+            roll: {
+              low: 'C4', high: 'E4',
+              notes: [['C4'],['C#4'],['D4'],['D#4'],['E4']],
+              sections: [['Root: 0',1],['1',1],['2',1],['3',1],['4',1]],
+              stepDur: 0.55,
+            },
           },
           {
             type: 'learn',
@@ -179,12 +195,12 @@ const LEARN_UNITS = [
             prompt: 'How many half steps is it from C up to E?',
             options: ['2', '3', '4', '5'],
             answer: 2,
-            explain: 'C → C# → D → D# → E. Four rows, so four half steps (two whole steps).',
+            explain: 'Start on C at zero, then count each move: C# (1), D (2), D# (3), E (4). Four half steps, which is two whole steps.',
           },
           {
             type: 'build',
             prompt: 'D4 is placed for you. In column 2, place the note <strong>one whole step above</strong> it.',
-            hint: 'A whole step is two rows up.',
+            hint: 'D is your root, so it counts as zero. Move up two rows: D# (1), then E (2).',
             roll: { low: 'C4', high: 'C5', steps: 2, mono: true, given: [['D4'], []] },
             answer: [['D4'], ['E4']],
             match: 'exact',
@@ -193,7 +209,7 @@ const LEARN_UNITS = [
           {
             type: 'build',
             prompt: 'Now E4 is placed. In column 2, place the note <strong>one half step above</strong> it.',
-            hint: 'One row up. Is there a black key between E and F?',
+            hint: 'E is your root (zero). Move up one row. Is there a black key between E and F?',
             roll: { low: 'C4', high: 'C5', steps: 2, mono: true, given: [['E4'], []] },
             answer: [['E4'], ['F4']],
             match: 'exact',
@@ -284,7 +300,8 @@ const LEARN_UNITS = [
             body: `
               <p>Every major scale uses the same pattern of steps:</p>
               <p class="formula">whole, whole, half, whole, whole, whole, half</p>
-              <p>Start on any note, follow the recipe, and you get that note's major scale. C major happens to land on only white keys, which is why everyone learns it first.</p>
+              <p>Start on the <strong>root</strong>, the note the scale is named after. Each step in the recipe is counted from the note you <strong>just landed on</strong>, not from the root. Whole = move up two rows, half = move up one.</p>
+              <p>Follow the recipe from any root and you get that note's major scale. C major happens to land on only white keys, which is why everyone learns it first.</p>
               <p class="tip">Many DAWs have a scale highlight or "fold to scale" mode that shades the rows in your key. The shaded rows below are exactly that.</p>
             `,
             roll: { low: 'C4', high: 'C5', notes: [], highlight: ['C','D','E','F','G','A','B'] },
@@ -511,6 +528,7 @@ const LEARN_UNITS = [
             title: 'Intervals are distances',
             body: `
               <p>An <strong>interval</strong> is the distance between two notes, counted in half steps. Every chord and melody is really just intervals stacked or strung together.</p>
+              <p>Count the same way as Unit 1: the lower note is the root and counts as <strong>zero</strong>. Then count each row you move up.</p>
               <table class="interval-table">
                 <tr><th>Half steps</th><th>Interval</th></tr>
                 <tr><td>1</td><td>Minor 2nd</td></tr>
