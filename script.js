@@ -34,7 +34,7 @@ const CURRENT_CHALLENGE = {
   desc:            'Randomly assigned collab partners make spooky tracks!',
   deadline:        'Not yet open for submissions.',
   type:            'standard',       // 'standard' or 'mimic'
-  submissionsOpen: false,          // ← flip to false to hide the submission button
+  submissionsOpen: true,          // ← flip to false to hide the submission button
   votingOpen:      false,         // ← flip to true when voting is active
 };
 
@@ -46,7 +46,7 @@ const CURRENT_PLAYLIST = {
 };
 
 const FORMS = {
-  challengeSubmit: 'PLACEHOLDER',   // ← paste your Google Form URL here
+  challengeSubmit: 'https://forms.gle/ivbgVQGXsBQRt3ar7',   // ← paste your Google Form URL here
   voting:          'PLACEHOLDER',                  // ← paste your voting Google Form URL here
   playlistSubmit:  'PLACEHOLDER',     // ← paste your Google Form URL here
 };
